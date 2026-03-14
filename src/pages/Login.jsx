@@ -1,16 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ApiService from "../services/ApiService";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [jelszo, setJelszo] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       await ApiService.login(email, jelszo);
-      window.location.href = "/";
+      navigate("/");
     } catch (err) {
       alert("Hibás bejelentkezés");
     }
