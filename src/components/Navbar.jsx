@@ -1,16 +1,8 @@
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
+import AccountMenu from "./AccountMenu";
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    await logout();
-    navigate("/login");
-  };
-
   return (
     <AppBar position="static">
       <Toolbar>
@@ -30,26 +22,12 @@ export default function Navbar() {
           <Button color="inherit" component={Link} to="/eszkozok">
             Eszközök
           </Button>
-          <Button color="inherit" component={Link} to="/eszkozok/uj">
-            Új eszköz
-          </Button>
-          <Button color="inherit" component={Link} to="/kolcsonzesek/uj">
-            Új kölcsönzés
-          </Button>
-          <Button color="inherit" component={Link} to="/kolcsonzesek/sajat">
-            Saját kölcsönzések
-          </Button>
-        </Box>
-
-        {user ? (
-          <Button color="inherit" onClick={handleLogout}>
-            Kilépés
-          </Button>
-        ) : (
           <Button color="inherit" component={Link} to="/login">
             Bejelentkezés
           </Button>
-        )}
+        </Box>
+
+        <AccountMenu />
       </Toolbar>
     </AppBar>
   );

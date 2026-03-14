@@ -1,10 +1,7 @@
-import AccountMenu from "../components/AccountMenu";
-
 export default function Home() {
   return (
-    <div>
+    <div style={{ padding: "24px" }}>
       <h1>Eszköz kölcsönző</h1>
-      <AccountMenu />
     </div>
   );
 }
