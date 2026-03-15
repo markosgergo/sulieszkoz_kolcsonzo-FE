@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Typography,
@@ -30,7 +31,7 @@ export default function EszkozLista() {
     { id: 2, nev: "Projektor Epson", tipus: "Projektor", allapot: "kolcsonozve" },
     { id: 3, nev: "Egér Logitech", tipus: "Kiegészítő", allapot: "szabad" }
   ]);
-
+  const navigate = useNavigate();
   // QR Modal állapota
   const [openQr, setOpenQr] = useState(false);
   const [selectedEszkoz, setSelectedEszkoz] = useState(null);
@@ -83,7 +84,10 @@ export default function EszkozLista() {
 
                 <TableCell align="center">
                   <Stack direction="row" spacing={1} justifyContent="center">
-                    <IconButton color="primary">
+                    <IconButton 
+                       color="primary" 
+                      onClick={() => navigate(`/kolcsonzes/${eszkoz.id}`)}
+                    >
                       <AssignmentIcon />
                     </IconButton>
 
