@@ -1,27 +1,117 @@
 import { useEffect, useState } from "react";
-import ApiService from "../services/ApiService";
+import {
+  Container,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Paper,
+  TableContainer,
+  Chip,
+  IconButton,
+  Stack
+} from "@mui/material";
+
+import DeleteIcon from "@mui/icons-material/Delete";
+import QrCodeIcon from "@mui/icons-material/QrCode";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 
 export default function EszkozLista() {
   const [eszkozok, setEszkozok] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await ApiService.getAllEszkoz();
-      setEszkozok(data);
-    };
+    const mockData = [
+      {
+        id: 1,
+        nev: "Laptop Dell",
+        tipus: "Laptop",
+        allapot: "szabad"
+      },
+      {
+        id: 2,
+        nev: "Projektor Epson",
+        tipus: "Projektor",
+        allapot: "kolcsonozve"
+      },
+      {
+        id: 3,
+        nev: "Egér Logitech",
+        tipus: "Kiegészítő",
+        allapot: "szabad"
+      }
+    ];
 
-    fetchData();
+    setEszkozok(mockData);
   }, []);
 
-  return (
-    <div>
-      <h2>Eszközök</h2>
+  const handleDelete = (id) => {
+    setEszkozok(eszkozok.filter((e) => e.id !== id));
+  };
 
-      {eszkozok.map((eszkoz) => (
-        <div key={eszkoz.id}>
-          {eszkoz.nev}
-        </div>
-      ))}
-    </div>
+  return (
+    <Container sx={{ mt: 4 }}>
+      <Typography variant="h4" sx={{ mb: 3 }}>
+        Eszköz lista
+      </Typography>
+
+      <TableContainer component={Paper}>
+        <Table>
+
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Név</TableCell>
+              <TableCell>Típus</TableCell>
+              <TableCell>Állapot</TableCell>
+              <TableCell align="center">Műveletek</TableCell>
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            {eszkozok.map((eszkoz) => (
+              <TableRow key={eszkoz.id}>
+
+                <TableCell>{eszkoz.id}</TableCell>
+                <TableCell>{eszkoz.nev}</TableCell>
+                <TableCell>{eszkoz.tipus}</TableCell>
+
+                <TableCell>
+                  {eszkoz.allapot === "szabad" ? (
+                    <Chip label="Szabad" color="success" />
+                  ) : (
+                    <Chip label="Kölcsönözve" color="error" />
+                  )}
+                </TableCell>
+
+                <TableCell align="center">
+                  <Stack direction="row" spacing={1} justifyContent="center">
+
+                    <IconButton color="primary">
+                      <AssignmentIcon />
+                    </IconButton>
+
+                    <IconButton color="secondary">
+                      <QrCodeIcon/>
+                    </IconButton>
+
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDelete(eszkoz.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+
+                  </Stack>
+                </TableCell>
+
+              </TableRow>
+            ))}
+          </TableBody>
+
+        </Table>
+      </TableContainer>
+    </Container>
   );
 }
