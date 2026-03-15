@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import EszkozLista from "./pages/EszkozLista";
+import UjEszkoz from "./pages/UjEszkoz";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/eszkozok" element={<EszkozLista />} />
+        <Route path="/eszkozok/uj" element={<UjEszkoz />} />
       </Routes>
     </>
   );

@@ -19,9 +19,15 @@ export default function Navbar() {
           <Button color="inherit" component={Link} to="/">
             Főoldal
           </Button>
+
           <Button color="inherit" component={Link} to="/eszkozok">
             Eszközök
           </Button>
+
+          <Button color="inherit" component={Link} to="/eszkozok/uj">
+            Új eszköz
+          </Button>
+
           <Button color="inherit" component={Link} to="/login">
             Bejelentkezés
           </Button>
