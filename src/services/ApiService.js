@@ -12,6 +12,12 @@ const ApiService = {
     return response.data;
   },
 
+  register: async (felhasznaloAdat) => {
+  // Az api példányod már tartalmazza az /api-t, így elég a /felhasznalok
+  const response = await api.post("/felhasznalok", felhasznaloAdat); 
+  return response.data;
+},
+
   logout: async () => {
     const response = await api.post("/auth/logout");
     return response.data;

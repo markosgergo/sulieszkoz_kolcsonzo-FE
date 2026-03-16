@@ -23,10 +23,13 @@ export default function Navbar() {
             </>
           )}
 
-          {!user ? (
-            <Button color="inherit" component={Link} to="/login">Bejelentkezés</Button>
+         {!user ? (
+            <>
+              <Button color="inherit" component={Link} to="/login">Bejelentkezés</Button>
+              <Button color="inherit" component={Link} to="/regisztracio">Regisztráció</Button>
+            </>
           ) : (
-            <AccountMenu /> // Csak akkor mutatjuk az Avatart, ha be van lépve
+            <AccountMenu />
           )}
         </Box>
       </Toolbar>
