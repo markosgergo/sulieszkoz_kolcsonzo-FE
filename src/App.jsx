@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Kolcsonzes from "./pages/Kolcsonzes";
 import Regisztracio from "./pages/Regisztracio";
 import SajatKolcsonzesek from "./pages/SajatKolcsonzesek";
+import AdminKolcsonzesek from "./pages/AdminKolcsonzesek";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/regisztracio" element={<Regisztracio />} />
         <Route path="/sajat-kolcsonzesek" element={<SajatKolcsonzesek />} />
+        <Route path="/admin/kolcsonzesek" element={<AdminKolcsonzesek />} />
         {/* Ezeket is érdemes védeni, ha csak belépett felhasználó láthatja */}
         <Route path="/eszkozok" element={
           <ProtectedRoute><EszkozLista /></ProtectedRoute>

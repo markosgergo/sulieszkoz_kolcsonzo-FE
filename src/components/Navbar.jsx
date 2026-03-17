@@ -21,11 +21,12 @@ export default function Navbar() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Button color="inherit" component={Link} to="/">Főoldal</Button>
           
-          {user && (
+         {user && (
             <>
               <Button color="inherit" component={Link} to="/eszkozok">Eszközök</Button>
-              {/* Ha admin vagy alkalmazott, csak akkor lássa az Új eszközt (opcionális finomítás) */}
-              {(user.szerepkor === 'ADMIN' || user.szerepkor === 'ALKALMAZOTT') && (
+              
+              {/* Javított feltétel: szerepkor helyett szerepkorNev */}
+              {(user.szerepkorNev === 'ADMIN' || user.szerepkorNev === 'ALKALMAZOTT') && (
                 <Button color="inherit" component={Link} to="/eszkozok/uj">Új eszköz</Button>
               )}
             </>

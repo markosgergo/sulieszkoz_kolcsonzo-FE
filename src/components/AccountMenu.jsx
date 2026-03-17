@@ -54,12 +54,20 @@ export default function AccountMenu() {
           Saját kölcsönzéseim
         </MenuItem>
 
+        
+        {user?.szerepkorNev === 'ADMIN' && (
+          <MenuItem onClick={() => navigate("/admin/kolcsonzesek")}>
+            Kölcsönzések kezelése
+          </MenuItem>
+        )}
+
         <Divider />
         
         <MenuItem onClick={handleLogout}>
           <ListItemIcon><Logout fontSize="small" /></ListItemIcon>
           Kijelentkezés
         </MenuItem>
+      
       </Menu>
     </>
   );
