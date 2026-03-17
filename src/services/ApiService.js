@@ -1,26 +1,63 @@
 import axios from "axios";
 
+// Axios példány létrehozása alapbeállításokkal
 const api = axios.create({
   baseURL: "http://localhost:8080/api",
   withCredentials: true,
 });
 
+/**
+ * FONTOS: REQUEST INTERCEPTOR
+ * Ez minden kimenő kérés elé "beáll", és ha talál tokent a localStorage-ban,
+ * azt automatikusan belerakja az Authorization fejlécbe.
+ */
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+/**
+ * OPTIONAL: RESPONSE INTERCEPTOR
+ * Ha a token lejár és a backend 401-et dob, automatikusan kiléptet.
+ */
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
 const ApiService = {
-  // AUTH
+  // --- AUTHENTICATION ---
   login: async (email, jelszo) => {
     const response = await api.post("/auth/login", { email, jelszo });
     return response.data;
   },
 
   register: async (felhasznaloAdat) => {
-  // Az api példányod már tartalmazza az /api-t, így elég a /felhasznalok
-  const response = await api.post("/felhasznalok", felhasznaloAdat); 
-  return response.data;
-},
+    // Itt a backend DTO-nak megfelelő mezőket küldjük (szerepkorNev, stb.)
+    const response = await api.post("/felhasznalok", felhasznaloAdat);
+    return response.data;
+  },
 
   logout: async () => {
-    const response = await api.post("/auth/logout");
-    return response.data;
+    try {
+      await api.post("/auth/logout");
+    } finally {
+      localStorage.removeItem("token");
+    }
   },
 
   getMe: async () => {
@@ -28,7 +65,7 @@ const ApiService = {
     return response.data;
   },
 
-  // ESZKOZOK
+  // --- ESZKOZOK ---
   getAllEszkoz: async () => {
     const response = await api.get("/eszkozok");
     return response.data;
@@ -59,14 +96,7 @@ const ApiService = {
     return response.data;
   },
 
-  getEszkozQrCode: async (id) => {
-    const response = await api.get(`/eszkozok/${id}/qrcode`, {
-      responseType: "blob",
-    });
-    return response.data;
-  },
-
-  // FELHASZNALOK
+  // --- FELHASZNALOK ---
   getAllFelhasznalo: async () => {
     const response = await api.get("/felhasznalok");
     return response.data;
@@ -77,17 +107,12 @@ const ApiService = {
     return response.data;
   },
 
-  createFelhasznalo: async (felhasznaloAdat) => {
-    const response = await api.post("/felhasznalok", felhasznaloAdat);
-    return response.data;
-  },
-
   deleteFelhasznalo: async (id) => {
     const response = await api.delete(`/felhasznalok/${id}`);
     return response.data;
   },
 
-  // KOLCSONZESEK
+  // --- KOLCSONZESEK ---
   getAllKolcsonzes: async () => {
     const response = await api.get("/kolcsonzesek");
     return response.data;

@@ -12,14 +12,15 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Itt most NEM az ApiService-t hívjuk, hanem a Context mock loginját
+      // Ez hívja meg az AuthContext login-ját, ami hívja az ApiService-t
       await login(email, password); 
       
-      // Ha a Context-ben átírtad a logint, ahogy javasoltam, 
-      // akkor ez most beállítja a user-t és mehetünk tovább.
-      navigate("/eszkozok");
+      // Ha nem dobott hibát, akkor a token mentése és a user beállítása megtörtént
+      console.log("Sikeres bejelentkezés!");
+      navigate("/eszkozok"); // Átirányítás
     } catch (error) {
-      alert("Hiba a bejelentkezés során!");
+      console.error("Login hiba:", error);
+      alert("Hibás email vagy jelszó!");
     }
   };
 

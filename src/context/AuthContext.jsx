@@ -4,16 +4,20 @@ import ApiService from "../services/ApiService";
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  // 1. Visszaállítjuk null-ra, hogy tényleg csak bejelentkezés után legyen user
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const checkAuth = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
     try {
-      // Megpróbáljuk lekérni a belépett felhasználót a backendtől
       const data = await ApiService.getMe();
       setUser(data);
     } catch (error) {
+      localStorage.removeItem("token");
       setUser(null);
     } finally {
       setLoading(false);
@@ -25,24 +29,25 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, jelszo) => {
-    // 2. Itt a trükk: most már az ApiService-t hívjuk meg!
+    // Meghívjuk a valódi backendet
     const response = await ApiService.login(email, jelszo);
     
-    // Elmentjük a kapott tokent a böngészőbe
+    // A backend válaszában lévő tokent elmentjük
     localStorage.setItem("token", response.token); 
     
-    // Frissítjük a user állapotát a válaszból kapott adatokkal
-    setUser(response.user);
+    // A válasz többi részét (név, email, szerepkör) beállítjuk usernek
+    setUser(response); 
+    return response; // Visszaadjuk, hogy a Login.js tudja, sikerült
   };
 
-  const logout = async () => {
+  const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
   };
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 }
