@@ -3,29 +3,10 @@ import { useNavigate } from "react-router-dom";
 import ApiService from "../services/ApiService";
 import { useAuth } from "../context/AuthContext";
 import {
-  Container,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Paper,
-  TableContainer,
-  Chip,
-  IconButton,
-  Stack,
-  CircularProgress,
-  TextField,
-  MenuItem,
-  InputAdornment,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Box,
-  Alert,
-  Button,
-  Grid // JAVÍTVA: Importálva!
+  Container, Typography, Table, TableBody, TableCell, TableHead, TableRow,
+  Paper, TableContainer, Chip, IconButton, Stack, CircularProgress,
+  TextField, MenuItem, InputAdornment, Dialog, DialogTitle, DialogContent,
+  Box, Alert, Button, Grid, Collapse
 } from "@mui/material";
 
 // Ikonok
@@ -34,6 +15,72 @@ import QrCodeIcon from "@mui/icons-material/QrCode";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+
+// KÜLÖN KOMPONENS A SOROKNAK A LENYÍLÓ FUNKCIÓ MIATT
+function Row({ eszkoz, isAdmin, navigate, handleDelete, setSelectedEszkoz, setOpenQr }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <TableRow hover sx={{ '& > *': { borderBottom: 'unset' } }}>
+        <TableCell>
+          <IconButton size="small" onClick={() => setOpen(!open)}>
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+        <TableCell>{eszkoz.id}</TableCell>
+        <TableCell sx={{ fontWeight: 'bold' }}>{eszkoz.nev}</TableCell>
+        <TableCell>{eszkoz.tipus}</TableCell>
+        <TableCell>
+          <Chip 
+            label={eszkoz.elerheto ? "Szabad" : "Kiadva"} 
+            color={eszkoz.elerheto ? "success" : "error"} 
+            size="small" 
+          />
+        </TableCell>
+        {isAdmin && (
+          <TableCell align="center">
+            <Stack direction="row" spacing={1} justifyContent="center">
+              <IconButton color="info" onClick={() => navigate(`/kolcsonzes/${eszkoz.id}`)}>
+                <AssignmentIcon />
+              </IconButton>
+              <IconButton color="secondary" onClick={() => { setSelectedEszkoz(eszkoz); setOpenQr(true); }}>
+                <QrCodeIcon/>
+              </IconButton>
+              <IconButton color="error" onClick={() => handleDelete(eszkoz.id)}>
+                <DeleteIcon />
+              </IconButton>
+            </Stack>
+          </TableCell>
+        )}
+      </TableRow>
+      
+      {/* LENYÍLÓ RÉSZ (ACCORDION) */}
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 2, p: 2, bgcolor: '#f9f9f9', borderRadius: 2, border: '1px solid #eee' }}>
+              <Typography variant="h6" gutterBottom component="div" sx={{ color: 'primary.main' }}>
+                Eszköz részletei
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="body2"><b>Leírás:</b> {eszkoz.leiras || "Nincs megadva leírás ehhez az eszközhöz."}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="body2"><b>SKU / Leltári szám:</b> {eszkoz.sku || "Nincs SKU"}</Typography>
+                  <Typography variant="body2"><b>Állapot:</b> {eszkoz.elerheto ? "Raktáron, kölcsönözhető" : "Jelenleg valakinél kint van"}</Typography>
+                </Grid>
+              </Grid>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </>
+  );
+}
 
 export default function EszkozLista() {
   const { user } = useAuth();
@@ -43,14 +90,11 @@ export default function EszkozLista() {
   const [szurtEszkozok, setSzurtEszkozok] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [kereses, setKereses] = useState("");
   const [kategoria, setKategoria] = useState("Mind");
-
   const [openQr, setOpenQr] = useState(false);
   const [selectedEszkoz, setSelectedEszkoz] = useState(null);
 
-  // Jogosultság ellenőrzése (Backend szerepkör alapján)
   const isAdmin = user?.szerepkorNev === "ADMIN" || user?.role === "ADMIN";
 
   useEffect(() => {
@@ -70,15 +114,10 @@ export default function EszkozLista() {
     }
   };
 
-  // JAVÍTOTT SZŰRÉS: Kis- és nagybetű független (Case-insensitive)
   useEffect(() => {
     const eredmeny = eszkozok.filter((e) => {
       const nevMatch = e.nev.toLowerCase().includes(kereses.toLowerCase());
-      
-      // JAVÍTVA: Mindkét oldalt kisbetűre rakjuk az összehasonlításhoz
-      const tipusMatch = kategoria === "Mind" || 
-                         e.tipus.toLowerCase() === kategoria.toLowerCase();
-      
+      const tipusMatch = kategoria === "Mind" || e.tipus.toLowerCase() === kategoria.toLowerCase();
       return nevMatch && tipusMatch;
     });
     setSzurtEszkozok(eredmeny);
@@ -107,19 +146,12 @@ export default function EszkozLista() {
         <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
           {isAdmin ? "Eszközök Kezelése" : "Eszközök"}
         </Typography>
-        
         {isAdmin && (
-          <Button 
-            variant="contained" 
-            startIcon={<AddIcon />} 
-            onClick={() => navigate("/eszkozok/uj")}
-          >
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate("/eszkozok/uj")}>
             Új eszköz
           </Button>
         )}
       </Stack>
-
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
       <Paper sx={{ p: 2, mb: 3, borderRadius: 2 }}>
         <Grid container spacing={2}>
@@ -156,9 +188,10 @@ export default function EszkozLista() {
       </Paper>
 
       <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 2 }}>
-        <Table>
+        <Table aria-label="collapsible table">
           <TableHead sx={{ bgcolor: isAdmin ? 'primary.main' : 'grey.200' }}>
             <TableRow>
+              <TableCell /> {/* Hely a lenyíló ikonnak */}
               <TableCell sx={{ color: isAdmin ? 'white' : 'black', fontWeight: 'bold' }}>ID</TableCell>
               <TableCell sx={{ color: isAdmin ? 'white' : 'black', fontWeight: 'bold' }}>Név</TableCell>
               <TableCell sx={{ color: isAdmin ? 'white' : 'black', fontWeight: 'bold' }}>Típus</TableCell>
@@ -169,44 +202,25 @@ export default function EszkozLista() {
           <TableBody>
             {szurtEszkozok.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 3 }}>Nincs találat.</TableCell>
+                <TableCell colSpan={6} align="center" sx={{ py: 3 }}>Nincs találat.</TableCell>
               </TableRow>
             ) : (
               szurtEszkozok.map((eszkoz) => (
-                <TableRow key={eszkoz.id} hover>
-                  <TableCell>{eszkoz.id}</TableCell>
-                  <TableCell sx={{ fontWeight: 'medium' }}>{eszkoz.nev}</TableCell>
-                  <TableCell>{eszkoz.tipus}</TableCell>
-                  <TableCell>
-                    <Chip 
-                      label={eszkoz.elerheto ? "Szabad" : "Kiadva"} 
-                      color={eszkoz.elerheto ? "success" : "error"} 
-                      size="small" 
-                    />
-                  </TableCell>
-                  {isAdmin && (
-                    <TableCell align="center">
-                      <Stack direction="row" spacing={1} justifyContent="center">
-                        <IconButton color="info" onClick={() => navigate(`/kolcsonzes/${eszkoz.id}`)}>
-                          <AssignmentIcon />
-                        </IconButton>
-                        <IconButton color="secondary" onClick={() => { setSelectedEszkoz(eszkoz); setOpenQr(true); }}>
-                          <QrCodeIcon/>
-                        </IconButton>
-                        <IconButton color="error" onClick={() => handleDelete(eszkoz.id)}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </Stack>
-                    </TableCell>
-                  )}
-                </TableRow>
+                <Row 
+                  key={eszkoz.id} 
+                  eszkoz={eszkoz} 
+                  isAdmin={isAdmin} 
+                  navigate={navigate} 
+                  handleDelete={handleDelete}
+                  setSelectedEszkoz={setSelectedEszkoz}
+                  setOpenQr={setOpenQr}
+                />
               ))
             )}
           </TableBody>
         </Table>
       </TableContainer>
 
-      {/* JAVÍTOTT QR DIALOG: Cache-törléssel és hibakezeléssel */}
       <Dialog open={openQr} onClose={() => setOpenQr(false)}>
         <DialogTitle sx={{ textAlign: 'center' }}>{selectedEszkoz?.nev}</DialogTitle>
         <DialogContent sx={{ textAlign: 'center', p: 4 }}>
