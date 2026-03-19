@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import ApiService from "../services/ApiService";
 import { 
   Container, Typography, Paper, Table, TableBody, TableCell, 
-  TableHead, TableRow, TableContainer, Button, Chip, Box, CircularProgress, Alert, IconButton 
+  TableHead, TableRow, TableContainer, Button, Chip, Box, 
+  CircularProgress, Alert, IconButton, Tooltip 
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InventoryIcon from "@mui/icons-material/Inventory";
@@ -17,6 +18,7 @@ export default function AdminKolcsonzesek() {
     try {
       setLoading(true);
       const data = await ApiService.getAllKolcsonzes();
+      console.log("Backend adatok ellenőrzése:", data); // Itt látod majd a konzolban a mezőneveket!
       setKolcsonzesek(data);
     } catch (err) {
       console.error("Hiba a kölcsönzések lekérésekor:", err);
@@ -31,10 +33,10 @@ export default function AdminKolcsonzesek() {
   }, []);
 
   const handleVisszavetel = async (id) => {
+    if (!window.confirm("Biztosan visszavételezettnek jelöli ezt az eszközt?")) return;
     try {
       await ApiService.visszavetel(id);
       setUzenet({ tipus: "success", szoveg: "Eszköz sikeresen visszavéve!" });
-      // Frissítjük a listát a backendről a változás után
       await adatokBetoltese();
     } catch (err) {
       setUzenet({ tipus: "error", szoveg: "Hiba történt a visszavétel során." });
@@ -53,7 +55,7 @@ export default function AdminKolcsonzesek() {
         <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
           Kölcsönzések adminisztrációja
         </Typography>
-        <IconButton onClick={adatokBetoltese} color="primary">
+        <IconButton onClick={adatokBetoltese} color="primary" sx={{ border: '1px solid #e0e0e0' }}>
           <RefreshIcon />
         </IconButton>
       </Box>
@@ -66,33 +68,38 @@ export default function AdminKolcsonzesek() {
 
       <TableContainer component={Paper} elevation={3}>
         <Table>
-          <TableHead sx={{ bgcolor: 'primary.main' }}>
+          <TableHead sx={{ bgcolor: '#f5f5f5' }}>
             <TableRow>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Eszköz</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Kölcsönző</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Határidő</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Státusz</TableCell>
-              <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>Művelet</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Eszköz</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Kölcsönző</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Határidő</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Státusz</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold' }}>Művelet</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {kolcsonzesek.map((k) => {
-              // LOGIKA: Ha a visszavetelDatuma NEM null, akkor már visszahozták.
-              const isVisszahozva = k.visszavetelDatuma !== null;
+              // MEGOLDÁS: Csak akkor visszahozott, ha a mező létezik ÉS van benne érték.
+              // A Boolean() kezeli a null, undefined és üres string eseteket is.
+              const isVisszahozva = Boolean(k.visszavetelDatuma || k.visszahozvaDatum);
               
-              // Késés: Nincs visszahozva ÉS a határidő kisebb, mint a mai dátum
-              const isExpired = !isVisszahozva && new Date(k.hatarido) < new Date();
-              
+              const hataridoDate = new Date(k.hatarido);
+              const ma = new Date();
+              ma.setHours(0, 0, 0, 0); 
+              const isExpired = !isVisszahozva && hataridoDate < ma;
+
               return (
                 <TableRow 
                   key={k.id} 
                   sx={{ 
-                    bgcolor: isVisszahozva ? 'rgba(0, 0, 0, 0.04)' : 'inherit',
-                    transition: '0.2s'
+                    bgcolor: isVisszahozva ? 'rgba(0, 0, 0, 0.03)' : 'inherit'
                   }}
                 >
-                  <TableCell>{k.eszkozNev} ({k.eszkozSku})</TableCell>
-                  <TableCell>{k.felhasznaloNev || "Ismeretlen diák"}</TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{k.eszkozNev}</Typography>
+                    <Typography variant="caption" color="text.secondary">#{k.eszkozId}</Typography>
+                  </TableCell>
+                  <TableCell>{k.felhasznaloNev || "N/A"}</TableCell>
                   <TableCell>
                     <Typography sx={{ color: isExpired ? 'error.main' : 'inherit', fontWeight: isExpired ? 'bold' : 'normal' }}>
                       {k.hatarido}
@@ -103,7 +110,7 @@ export default function AdminKolcsonzesek() {
                       <Chip label="Visszahozva" size="small" variant="outlined" />
                     ) : (
                       <Chip 
-                        label={isExpired ? "Késésben" : "Nálad van"} 
+                        label={isExpired ? "Késésben" : "Kiadva"} 
                         color={isExpired ? "error" : "primary"} 
                         size="small" 
                       />
@@ -111,9 +118,9 @@ export default function AdminKolcsonzesek() {
                   </TableCell>
                   <TableCell align="center">
                     {isVisszahozva ? (
-                      <Box sx={{ color: 'success.main', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <InventoryIcon sx={{ mr: 1, fontSize: 20 }} />
-                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>Raktáron</Typography>
+                      <Box sx={{ color: 'text.disabled', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <InventoryIcon sx={{ mr: 1, fontSize: 18 }} />
+                        <Typography variant="body2">Raktáron</Typography>
                       </Box>
                     ) : (
                       <Button 
