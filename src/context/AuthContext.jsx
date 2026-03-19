@@ -29,15 +29,23 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, jelszo) => {
-    // Meghívjuk a valódi backendet
+    // 1. Bejelentkezés
     const response = await ApiService.login(email, jelszo);
     
-    // A backend válaszában lévő tokent elmentjük
-    localStorage.setItem("token", response.token); 
+    // 2. Token mentése (ApiService-től függően response.token vagy response.data.token)
+    const token = response.token || response.data?.token;
+    localStorage.setItem("token", token); 
     
-    // A válasz többi részét (név, email, szerepkör) beállítjuk usernek
-    setUser(response); 
-    return response; // Visszaadjuk, hogy a Login.js tudja, sikerült
+    // 3. Friss adatok lekérése a "me" végpontról, hogy ugyanaz legyen az állapot, mint F5 után
+    try {
+      const userData = await ApiService.getMe();
+      setUser(userData); // Ez frissíti a Navbart azonnal!
+      return userData;
+    } catch (error) {
+      // Ha a getMe hibaágra futna, állítsuk be a response-ból az adatokat
+      setUser(response);
+      return response;
+    }
   };
 
   const logout = () => {
