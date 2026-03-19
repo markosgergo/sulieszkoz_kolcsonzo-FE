@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ApiService from "../services/ApiService";
+import { useAuth } from "../context/AuthContext";
 import {
   Container,
   Typography,
@@ -22,82 +23,78 @@ import {
   DialogTitle,
   DialogContent,
   Box,
-  Alert
+  Alert,
+  Button,
+  Grid // JAVÍTVA: Importálva!
 } from "@mui/material";
 
+// Ikonok
 import DeleteIcon from "@mui/icons-material/Delete";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import SearchIcon from "@mui/icons-material/Search";
+import AddIcon from "@mui/icons-material/Add";
 
 export default function EszkozLista() {
-  // --- ÁLLAPOTOK ---
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [eszkozok, setEszkozok] = useState([]);
   const [szurtEszkozok, setSzurtEszkozok] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Szűrési állapotok
   const [kereses, setKereses] = useState("");
   const [kategoria, setKategoria] = useState("Mind");
 
-  // QR Dialog állapotok
   const [openQr, setOpenQr] = useState(false);
   const [selectedEszkoz, setSelectedEszkoz] = useState(null);
 
-  const navigate = useNavigate();
+  // Jogosultság ellenőrzése (Backend szerepkör alapján)
+  const isAdmin = user?.szerepkorNev === "ADMIN" || user?.role === "ADMIN";
 
-  // --- ADATOK LEKÉRÉSE ---
   useEffect(() => {
-    const fetchEszkozok = async () => {
-      try {
-        setLoading(true);
-        const data = await ApiService.getAllEszkoz();
-        setEszkozok(data);
-        setSzurtEszkozok(data);
-      } catch (err) {
-        setError("Nem sikerült betölteni az eszközöket.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEszkozok();
+    fetchData();
   }, []);
 
-  // --- SZŰRÉSI LOGIKA ---
-  // Ez fut le, ha változik a keresőmező, a kategória, vagy az alap lista
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const data = await ApiService.getAllEszkoz();
+      setEszkozok(data);
+      setSzurtEszkozok(data);
+    } catch (err) {
+      setError("Nem sikerült betölteni az eszközöket.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // JAVÍTOTT SZŰRÉS: Kis- és nagybetű független (Case-insensitive)
   useEffect(() => {
-    const eredmeny = eszkozok.filter((eszkoz) => {
-      const nevEgyezik = eszkoz.nev.toLowerCase().includes(kereses.toLowerCase());
-      const kategoriaEgyezik = kategoria === "Mind" || eszkoz.tipus === kategoria;
-      return nevEgyezik && kategoriaEgyezik;
+    const eredmeny = eszkozok.filter((e) => {
+      const nevMatch = e.nev.toLowerCase().includes(kereses.toLowerCase());
+      
+      // JAVÍTVA: Mindkét oldalt kisbetűre rakjuk az összehasonlításhoz
+      const tipusMatch = kategoria === "Mind" || 
+                         e.tipus.toLowerCase() === kategoria.toLowerCase();
+      
+      return nevMatch && tipusMatch;
     });
     setSzurtEszkozok(eredmeny);
   }, [kereses, kategoria, eszkozok]);
-
-  // --- MŰVELETEK ---
-  const handleOpenQr = (eszkoz) => {
-    setSelectedEszkoz(eszkoz);
-    setOpenQr(true);
-  };
-
-  const handleCloseQr = () => {
-    setOpenQr(false);
-    setSelectedEszkoz(null);
-  };
 
   const handleDelete = async (id) => {
     if (window.confirm("Biztosan törölni szeretnéd ezt az eszközt?")) {
       try {
         await ApiService.deleteEszkoz(id);
-        setEszkozok(eszkozok.filter((e) => e.id !== id));
+        setEszkozok(prev => prev.filter(e => e.id !== id));
       } catch (err) {
         alert("Hiba történt a törlés során!");
       }
     }
   };
 
-  // --- RENDERELÉS ---
   if (loading) return (
     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
       <CircularProgress />
@@ -106,63 +103,73 @@ export default function EszkozLista() {
 
   return (
     <Container sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold' }}>
-        Eszköz lista
-      </Typography>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+          {isAdmin ? "Eszközök Kezelése" : "Eszközök"}
+        </Typography>
+        
+        {isAdmin && (
+          <Button 
+            variant="contained" 
+            startIcon={<AddIcon />} 
+            onClick={() => navigate("/eszkozok/uj")}
+          >
+            Új eszköz
+          </Button>
+        )}
+      </Stack>
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-      {/* --- KERESŐ ÉS SZŰRŐ PANEL --- */}
       <Paper sx={{ p: 2, mb: 3, borderRadius: 2 }}>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Keresés név alapján..."
-            value={kereses}
-            onChange={(e) => setKereses(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon color="action" />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <TextField
-            select
-            sx={{ minWidth: { sm: 200 } }}
-            label="Típus szűrés"
-            value={kategoria}
-            onChange={(e) => setKategoria(e.target.value)}
-          >
-            <MenuItem value="Mind">Összes típus</MenuItem>
-            <MenuItem value="LAPTOP">Laptop</MenuItem>
-            <MenuItem value="TABLET">Tablet</MenuItem>
-            <MenuItem value="PROJEKTOR">Projektor</MenuItem>
-          </TextField>
-        </Stack>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={8}>
+            <TextField
+              fullWidth
+              placeholder="Keresés név alapján..."
+              value={kereses}
+              onChange={(e) => setKereses(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="action" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              select
+              fullWidth
+              label="Kategória"
+              value={kategoria}
+              onChange={(e) => setKategoria(e.target.value)}
+            >
+              <MenuItem value="Mind">Összes kategória</MenuItem>
+              <MenuItem value="laptop">Laptop</MenuItem>
+              <MenuItem value="tablet">Tablet</MenuItem>
+              <MenuItem value="telefon">Telefon</MenuItem>
+            </TextField>
+          </Grid>
+        </Grid>
       </Paper>
 
-      {/* --- TÁBLÁZAT --- */}
       <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 2 }}>
         <Table>
-          <TableHead sx={{ bgcolor: '#f5f5f5' }}>
+          <TableHead sx={{ bgcolor: isAdmin ? 'primary.main' : 'grey.200' }}>
             <TableRow>
-              <TableCell><b>ID</b></TableCell>
-              <TableCell><b>Név</b></TableCell>
-              <TableCell><b>Típus</b></TableCell>
-              <TableCell><b>Állapot</b></TableCell>
-              <TableCell align="center"><b>Műveletek</b></TableCell>
+              <TableCell sx={{ color: isAdmin ? 'white' : 'black', fontWeight: 'bold' }}>ID</TableCell>
+              <TableCell sx={{ color: isAdmin ? 'white' : 'black', fontWeight: 'bold' }}>Név</TableCell>
+              <TableCell sx={{ color: isAdmin ? 'white' : 'black', fontWeight: 'bold' }}>Típus</TableCell>
+              <TableCell sx={{ color: isAdmin ? 'white' : 'black', fontWeight: 'bold' }}>Állapot</TableCell>
+              {isAdmin && <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>Műveletek</TableCell>}
             </TableRow>
           </TableHead>
-
           <TableBody>
             {szurtEszkozok.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
-                  <Typography color="textSecondary">Nincs a keresésnek megfelelő eszköz.</Typography>
-                </TableCell>
+                <TableCell colSpan={5} align="center" sx={{ py: 3 }}>Nincs találat.</TableCell>
               </TableRow>
             ) : (
               szurtEszkozok.map((eszkoz) => (
@@ -171,40 +178,27 @@ export default function EszkozLista() {
                   <TableCell sx={{ fontWeight: 'medium' }}>{eszkoz.nev}</TableCell>
                   <TableCell>{eszkoz.tipus}</TableCell>
                   <TableCell>
-                    {eszkoz.allapot === "szabad" || eszkoz.elerheto === true ? (
-                      <Chip label="Szabad" color="success" size="small" />
-                    ) : (
-                      <Chip label="Kölcsönözve" color="error" size="small" />
-                    )}
+                    <Chip 
+                      label={eszkoz.elerheto ? "Szabad" : "Kiadva"} 
+                      color={eszkoz.elerheto ? "success" : "error"} 
+                      size="small" 
+                    />
                   </TableCell>
-
-                  <TableCell align="center">
-                    <Stack direction="row" spacing={1} justifyContent="center">
-                      <IconButton 
-                        color="primary" 
-                        title="Kölcsönzés"
-                        onClick={() => navigate(`/kolcsonzes/${eszkoz.id}`)}
-                      >
-                        <AssignmentIcon />
-                      </IconButton>
-
-                      <IconButton 
-                        color="secondary" 
-                        title="QR Kód"
-                        onClick={() => handleOpenQr(eszkoz)}
-                      >
-                        <QrCodeIcon/>
-                      </IconButton>
-
-                      <IconButton 
-                        color="error" 
-                        title="Törlés"
-                        onClick={() => handleDelete(eszkoz.id)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Stack>
-                  </TableCell>
+                  {isAdmin && (
+                    <TableCell align="center">
+                      <Stack direction="row" spacing={1} justifyContent="center">
+                        <IconButton color="info" onClick={() => navigate(`/kolcsonzes/${eszkoz.id}`)}>
+                          <AssignmentIcon />
+                        </IconButton>
+                        <IconButton color="secondary" onClick={() => { setSelectedEszkoz(eszkoz); setOpenQr(true); }}>
+                          <QrCodeIcon/>
+                        </IconButton>
+                        <IconButton color="error" onClick={() => handleDelete(eszkoz.id)}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </Stack>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
             )}
@@ -212,25 +206,22 @@ export default function EszkozLista() {
         </Table>
       </TableContainer>
 
-      {/* --- QR KÓD DIALOG --- */}
-      <Dialog open={openQr} onClose={handleCloseQr}>
-        <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold' }}>
-          {selectedEszkoz?.nev}
-        </DialogTitle>
-        <DialogContent sx={{ textAlign: 'center', minWidth: 280 }}>
+      {/* JAVÍTOTT QR DIALOG: Cache-törléssel és hibakezeléssel */}
+      <Dialog open={openQr} onClose={() => setOpenQr(false)}>
+        <DialogTitle sx={{ textAlign: 'center' }}>{selectedEszkoz?.nev}</DialogTitle>
+        <DialogContent sx={{ textAlign: 'center', p: 4 }}>
           {selectedEszkoz && (
-            <Box sx={{ p: 2 }}>
+            <Box>
               <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=ESZKOZ_ID_${selectedEszkoz.id}`}
-                alt="QR kód"
-                style={{ width: '200px', height: '200px', marginBottom: '10px' }}
+                src={`http://localhost:8080/api/eszkozok/${selectedEszkoz.id}/qrcode?t=${new Date().getTime()}`}
+                alt="QR Kód"
+                style={{ width: '250px', height: '250px', border: '1px solid #ddd', borderRadius: '8px' }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://placehold.co/250x250?text=QR+Hiba";
+                }}
               />
-              <Typography variant="body2" color="textSecondary">
-                Azonosító: {selectedEszkoz.id}
-              </Typography>
-              <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                Típus: {selectedEszkoz.tipus}
-              </Typography>
+              <Typography variant="h6" sx={{ mt: 2 }}>SKU: {selectedEszkoz.sku || "Nincs"}</Typography>
             </Box>
           )}
         </DialogContent>
