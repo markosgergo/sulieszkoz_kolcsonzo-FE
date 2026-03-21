@@ -6,7 +6,7 @@ import {
   Container, Typography, Table, TableBody, TableCell, TableHead, TableRow,
   Paper, TableContainer, Chip, IconButton, Stack, CircularProgress,
   TextField, MenuItem, InputAdornment, Dialog, DialogTitle, DialogContent,
-  Box, Alert, Button, Grid, Collapse
+  Box, Button, Grid, Collapse
 } from "@mui/material";
 
 // Ikonok
@@ -18,7 +18,7 @@ import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
-// KÜLÖN KOMPONENS A SOROKNAK A LENYÍLÓ FUNKCIÓ MIATT
+// KÜLÖN KOMPONENS A SOROKNAK
 function Row({ eszkoz, isAdmin, navigate, handleDelete, setSelectedEszkoz, setOpenQr }) {
   const [open, setOpen] = useState(false);
 
@@ -56,20 +56,18 @@ function Row({ eszkoz, isAdmin, navigate, handleDelete, setSelectedEszkoz, setOp
           </TableCell>
         )}
       </TableRow>
-      
-      {/* LENYÍLÓ RÉSZ (ACCORDION) */}
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={isAdmin ? 6 : 5}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 2, p: 2, bgcolor: '#f9f9f9', borderRadius: 2, border: '1px solid #eee' }}>
               <Typography variant="h6" gutterBottom component="div" sx={{ color: 'primary.main' }}>
                 Eszköz részletei
               </Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="body2"><b>Leírás:</b> {eszkoz.leiras || "Nincs megadva leírás ehhez az eszközhöz."}</Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="body2"><b>SKU / Leltári szám:</b> {eszkoz.sku || "Nincs SKU"}</Typography>
                   <Typography variant="body2"><b>Állapot:</b> {eszkoz.elerheto ? "Raktáron, kölcsönözhető" : "Jelenleg valakinél kint van"}</Typography>
                 </Grid>
@@ -89,7 +87,6 @@ export default function EszkozLista() {
   const [eszkozok, setEszkozok] = useState([]);
   const [szurtEszkozok, setSzurtEszkozok] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [kereses, setKereses] = useState("");
   const [kategoria, setKategoria] = useState("Mind");
   const [openQr, setOpenQr] = useState(false);
@@ -108,7 +105,7 @@ export default function EszkozLista() {
       setEszkozok(data);
       setSzurtEszkozok(data);
     } catch (err) {
-      setError("Nem sikerült betölteni az eszközöket.");
+      console.error("Hiba az adatok lekérésekor:", err);
     } finally {
       setLoading(false);
     }
@@ -155,7 +152,7 @@ export default function EszkozLista() {
 
       <Paper sx={{ p: 2, mb: 3, borderRadius: 2 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={8}>
+          <Grid xs={12} sm={8}>
             <TextField
               fullWidth
               placeholder="Keresés név alapján..."
@@ -170,7 +167,7 @@ export default function EszkozLista() {
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid xs={12} sm={4}>
             <TextField
               select
               fullWidth
@@ -188,10 +185,10 @@ export default function EszkozLista() {
       </Paper>
 
       <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 2 }}>
-        <Table aria-label="collapsible table">
+        <Table aria-label="eszkozok tablazat">
           <TableHead sx={{ bgcolor: isAdmin ? 'primary.main' : 'grey.200' }}>
             <TableRow>
-              <TableCell /> {/* Hely a lenyíló ikonnak */}
+              <TableCell />
               <TableCell sx={{ color: isAdmin ? 'white' : 'black', fontWeight: 'bold' }}>ID</TableCell>
               <TableCell sx={{ color: isAdmin ? 'white' : 'black', fontWeight: 'bold' }}>Név</TableCell>
               <TableCell sx={{ color: isAdmin ? 'white' : 'black', fontWeight: 'bold' }}>Típus</TableCell>
@@ -202,7 +199,9 @@ export default function EszkozLista() {
           <TableBody>
             {szurtEszkozok.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 3 }}>Nincs találat.</TableCell>
+                <TableCell colSpan={isAdmin ? 6 : 5} align="center" sx={{ py: 3 }}>
+                  Nincs találat.
+                </TableCell>
               </TableRow>
             ) : (
               szurtEszkozok.map((eszkoz) => (
