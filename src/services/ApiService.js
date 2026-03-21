@@ -7,9 +7,7 @@ const api = axios.create({
 });
 
 /**
- * FONTOS: REQUEST INTERCEPTOR
- * Ez minden kimenő kérés elé "beáll", és ha talál tokent a localStorage-ban,
- * azt automatikusan belerakja az Authorization fejlécbe.
+ * REQUEST INTERCEPTOR: Automatikusan hozzáadja a JWT tokent minden kéréshez
  */
 api.interceptors.request.use(
   (config) => {
@@ -19,14 +17,11 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 /**
- * OPTIONAL: RESPONSE INTERCEPTOR
- * Ha a token lejár és a backend 401-et dob, automatikusan kiléptet.
+ * RESPONSE INTERCEPTOR: Kezeli a lejárt munkamenetet (401 hiba)
  */
 api.interceptors.response.use(
   (response) => response,
@@ -40,14 +35,13 @@ api.interceptors.response.use(
 );
 
 const ApiService = {
-  // --- AUTHENTICATION ---
+  // --- AUTHENTICATION (Hitelesítés) ---
   login: async (email, jelszo) => {
     const response = await api.post("/auth/login", { email, jelszo });
     return response.data;
   },
 
   register: async (felhasznaloAdat) => {
-    // Itt a backend DTO-nak megfelelő mezőket küldjük (szerepkorNev, stb.)
     const response = await api.post("/felhasznalok", felhasznaloAdat);
     return response.data;
   },
@@ -65,7 +59,7 @@ const ApiService = {
     return response.data;
   },
 
-  // --- ESZKOZOK ---
+  // --- ESZKOZOK (Eszközök kezelése) ---
   getAllEszkoz: async () => {
     const response = await api.get("/eszkozok");
     return response.data;
@@ -96,7 +90,18 @@ const ApiService = {
     return response.data;
   },
 
-  // --- FELHASZNALOK ---
+  /**
+   * BIZTONSÁGOS QR KÓD LEKÉRÉS:
+   * Mivel a backend auth-ot kér, bináris adatként (blob) hívjuk le.
+   */
+  getEszkozQrCode: async (id) => {
+    const response = await api.get(`/eszkozok/${id}/qrcode`, {
+      responseType: 'blob'
+    });
+    return URL.createObjectURL(response.data);
+  },
+
+  // --- FELHASZNALOK (Adminisztráció) ---
   getAllFelhasznalo: async () => {
     const response = await api.get("/felhasznalok");
     return response.data;
@@ -112,7 +117,7 @@ const ApiService = {
     return response.data;
   },
 
-  // --- KOLCSONZESEK ---
+  // --- KOLCSONZESEK (Kölcsönzési folyamat) ---
   getAllKolcsonzes: async () => {
     const response = await api.get("/kolcsonzesek");
     return response.data;
@@ -133,10 +138,17 @@ const ApiService = {
     return response.data;
   },
 
+  // Visszavétel konkrét kölcsönzés ID alapján
   visszavetel: async (id) => {
     const response = await api.put(`/kolcsonzesek/${id}/visszavetel`);
     return response.data;
   },
+
+  // Visszavétel eszköz ID alapján (ha a kezelő nem tudja a kölcsönzés ID-t)
+  visszavetelByEszkozId: async (eszkozId) => {
+    const response = await api.put(`/kolcsonzesek/visszavetel/eszkoz/${eszkozId}`);
+    return response.data;
+  }
 };
 
 export default ApiService;
