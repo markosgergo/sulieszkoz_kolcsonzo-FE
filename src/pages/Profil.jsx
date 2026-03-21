@@ -8,7 +8,6 @@ import LockResetIcon from "@mui/icons-material/LockReset";
 export default function Profil() {
   const { user } = useAuth();
 
-  // Ha véletlenül nincs bejelentkezve, ne szálljon el a kód
   if (!user) return <Typography align="center" sx={{ mt: 5 }}>Nincs bejelentkezett felhasználó.</Typography>;
 
   return (
@@ -37,16 +36,16 @@ export default function Profil() {
         </Typography>
 
         <Chip 
-          label={user.szerepkorNev || user.role} 
+          label={user.szerepkorNev || user.role || "Felhasználó"} 
           color={user.szerepkorNev === "ADMIN" ? "error" : "primary"} 
           sx={{ mb: 3, fontWeight: 'bold' }} 
         />
 
         <Divider sx={{ mb: 3 }} />
 
-        {/* Adatok listája */}
+        {/* Adatok listája - Kijavított Grid (nincs "item" prop) */}
         <Grid container spacing={3} sx={{ textAlign: 'left' }}>
-          <Grid item xs={12} display="flex" alignItems="center">
+          <Grid xs={12} display="flex" alignItems="center">
             <EmailIcon sx={{ mr: 2, color: 'text.secondary' }} />
             <Box>
               <Typography variant="caption" color="text.secondary">E-mail cím</Typography>
@@ -54,7 +53,7 @@ export default function Profil() {
             </Box>
           </Grid>
 
-          <Grid item xs={12} display="flex" alignItems="center">
+          <Grid xs={12} display="flex" alignItems="center">
             <BadgeIcon sx={{ mr: 2, color: 'text.secondary' }} />
             <Box>
               <Typography variant="caption" color="text.secondary">Felhasználóazonosító (ID)</Typography>
@@ -62,7 +61,7 @@ export default function Profil() {
             </Box>
           </Grid>
 
-          <Grid item xs={12} display="flex" alignItems="center">
+          <Grid xs={12} display="flex" alignItems="center">
             <PersonIcon sx={{ mr: 2, color: 'text.secondary' }} />
             <Box>
               <Typography variant="caption" color="text.secondary">Szerepkör</Typography>
@@ -78,7 +77,7 @@ export default function Profil() {
           <Button 
             variant="outlined" 
             startIcon={<LockResetIcon />}
-            onClick={() => alert("Jelszó módosítás funkció hamarosan...")}
+            onClick={() => alert("Ez a funkció fejlesztés alatt áll. Kérlek, fordulj a rendszergazdához!")}
           >
             Jelszó módosítása
           </Button>
