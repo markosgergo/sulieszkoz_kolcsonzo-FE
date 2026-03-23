@@ -12,24 +12,46 @@ import {
 // Ikonok
 import DeleteIcon from "@mui/icons-material/Delete";
 import QrCodeIcon from "@mui/icons-material/QrCode";
-import AssignmentIcon from "@mui/icons-material/Assignment"; // Kiadás
-import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn"; // Visszavétel
+import AssignmentIcon from "@mui/icons-material/Assignment"; 
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn"; 
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
 
-function Row({ eszkoz, isAdmin, navigate, handleDelete, handleOpenQr, onRefresh }) {
+function Row({ eszkoz, isAdmin, user, navigate, handleDelete, handleOpenQr, onRefresh }) {
   const [open, setOpen] = useState(false);
 
+  // ADMIN: Visszavétel funkció
   const handleVisszavetel = async () => {
     if (window.confirm(`Biztosan visszaveszed a(z) ${eszkoz.nev} eszközt?`)) {
       try {
         await ApiService.visszavetelByEszkozId(eszkoz.id);
         alert("Eszköz sikeresen visszavéve!");
-        onRefresh(); // Lista frissítése
+        onRefresh(); 
       } catch (err) {
         alert("Hiba a visszavétel során!");
+      }
+    }
+  };
+
+  // USER: Foglalás funkció (Backend módosítás nélkül, a meglévő createKolcsonzes-t használva)
+  const handleFoglalas = async () => {
+    if (window.confirm(`Szeretnéd lefoglalni a következőt: ${eszkoz.nev}?`)) {
+      try {
+        const foglalasAdat = {
+          felhasznaloId: user.id, 
+          eszkozId: eszkoz.id,
+          kiadoId: 1, // FONTOS: Itt egy létező Admin ID-t adj meg (pl. 1)
+          hatarido: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // +7 nap
+        };
+
+        await ApiService.createKolcsonzes(foglalasAdat);
+        alert("Sikeres foglalás!");
+        onRefresh();
+      } catch (err) {
+        alert("Hiba a foglalásnál! (Ellenőrizd, hogy létezik-e az 1-es ID-jú admin)");
       }
     }
   };
@@ -47,35 +69,57 @@ function Row({ eszkoz, isAdmin, navigate, handleDelete, handleOpenQr, onRefresh 
         <TableCell>{eszkoz.tipus}</TableCell>
         <TableCell>
           <Chip 
-            label={eszkoz.elerheto ? "Szabad" : "Kiadva"} 
+            label={eszkoz.elerheto ? "Szabad" : "Kiadva / Foglalt"} 
             color={eszkoz.elerheto ? "success" : "error"} 
             size="small" 
           />
         </TableCell>
-        {isAdmin && (
-          <TableCell align="center">
-            <Stack direction="row" spacing={1} justifyContent="center">
-              {eszkoz.elerheto ? (
-                <IconButton color="info" onClick={() => navigate(`/kolcsonzes/${eszkoz.id}`)} title="Kiadás">
-                  <AssignmentIcon />
-                </IconButton>
-              ) : (
-                <IconButton color="success" onClick={handleVisszavetel} title="Visszavétel">
-                  <AssignmentTurnedInIcon />
-                </IconButton>
-              )}
-              <IconButton color="secondary" onClick={() => handleOpenQr(eszkoz)} title="QR Kód">
-                <QrCodeIcon/>
-              </IconButton>
+        <TableCell align="center">
+          <Stack direction="row" spacing={1} justifyContent="center">
+            
+            {/* ADMIN Funkciók */}
+            {isAdmin && (
+              <>
+                {eszkoz.elerheto ? (
+                  <IconButton color="info" onClick={() => navigate(`/kolcsonzes/${eszkoz.id}`)} title="Kiadás">
+                    <AssignmentIcon />
+                  </IconButton>
+                ) : (
+                  <IconButton color="success" onClick={handleVisszavetel} title="Visszavétel">
+                    <AssignmentTurnedInIcon />
+                  </IconButton>
+                )}
+              </>
+            )}
+
+            {/* USER Funkció (Lefoglalás) - Csak ha szabad az eszköz és nem admin a user */}
+            {!isAdmin && eszkoz.elerheto && (
+              <Button 
+                variant="contained" 
+                size="small" 
+                color="secondary" 
+                startIcon={<BookmarkAddIcon />}
+                onClick={handleFoglalas}
+              >
+                Lefoglalás
+              </Button>
+            )}
+
+            {/* Közös gombok (pl. QR kód) */}
+            <IconButton color="secondary" onClick={() => handleOpenQr(eszkoz)} title="QR Kód">
+              <QrCodeIcon/>
+            </IconButton>
+
+            {isAdmin && (
               <IconButton color="error" onClick={() => handleDelete(eszkoz.id)} title="Törlés">
                 <DeleteIcon />
               </IconButton>
-            </Stack>
-          </TableCell>
-        )}
+            )}
+          </Stack>
+        </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={isAdmin ? 6 : 5}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 2, p: 2, bgcolor: '#f9f9f9', borderRadius: 2, border: '1px solid #eee' }}>
               <Typography variant="h6" gutterBottom color="primary">Részletek</Typography>
@@ -85,7 +129,7 @@ function Row({ eszkoz, isAdmin, navigate, handleDelete, handleOpenQr, onRefresh 
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="body2"><b>SKU:</b> {eszkoz.sku || "Nincs SKU"}</Typography>
-                  <Typography variant="body2"><b>Státusz:</b> {eszkoz.elerheto ? "Kölcsönözhető" : "Kiadva"}</Typography>
+                  <Typography variant="body2"><b>Státusz:</b> {eszkoz.elerheto ? "Kölcsönözhető" : "Foglalt/Kiadva"}</Typography>
                 </Grid>
               </Grid>
             </Box>
@@ -105,7 +149,6 @@ export default function EszkozLista() {
   const [kereses, setKereses] = useState("");
   const [kategoria, setKategoria] = useState("Mind");
 
-  // QR Modal állapota
   const [openQr, setOpenQr] = useState(false);
   const [selectedEszkoz, setSelectedEszkoz] = useState(null);
   const [qrImageUrl, setQrImageUrl] = useState(null);
@@ -152,7 +195,7 @@ export default function EszkozLista() {
   }, [kereses, kategoria, eszkozok]);
 
   const handleDelete = async (id) => {
-    if (window.confirm("Törlöd az eszközt?")) {
+    if (window.confirm("Biztosan törlöd az eszközt?")) {
       try {
         await ApiService.deleteEszkoz(id);
         fetchData();
@@ -172,7 +215,7 @@ export default function EszkozLista() {
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={8}>
-            <TextField fullWidth placeholder="Keresés..." value={kereses} onChange={(e) => setKereses(e.target.value)}
+            <TextField fullWidth placeholder="Keresés név alapján..." value={kereses} onChange={(e) => setKereses(e.target.value)}
               InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }} />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -193,13 +236,21 @@ export default function EszkozLista() {
               <TableCell sx={{color: 'white'}}>Név</TableCell>
               <TableCell sx={{color: 'white'}}>Típus</TableCell>
               <TableCell sx={{color: 'white'}}>Állapot</TableCell>
-              {isAdmin && <TableCell align="center" sx={{color: 'white'}}>Műveletek</TableCell>}
+              <TableCell align="center" sx={{color: 'white'}}>Műveletek</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {szurtEszkozok.map((eszkoz) => (
-              <Row key={eszkoz.id} eszkoz={eszkoz} isAdmin={isAdmin} navigate={navigate} 
-                handleDelete={handleDelete} handleOpenQr={handleOpenQr} onRefresh={fetchData} />
+              <Row 
+                key={eszkoz.id} 
+                eszkoz={eszkoz} 
+                isAdmin={isAdmin} 
+                user={user} 
+                navigate={navigate} 
+                handleDelete={handleDelete} 
+                handleOpenQr={handleOpenQr} 
+                onRefresh={fetchData} 
+              />
             ))}
           </TableBody>
         </Table>
@@ -210,7 +261,7 @@ export default function EszkozLista() {
         <DialogContent sx={{ textAlign: 'center', p: 4 }}>
           {qrLoading ? <CircularProgress /> : (
             <Box>
-              <img src={qrImageUrl} alt="QR" style={{ width: '250px', height: '250px', border: '1px solid #ddd' }} />
+              <img src={qrImageUrl} alt="QR" style={{ width: '250px', height: '250px', border: '1px solid #ddd', borderRadius: '8px' }} />
               <Typography variant="h6" sx={{ mt: 2 }}>SKU: {selectedEszkoz?.sku}</Typography>
             </Box>
           )}
