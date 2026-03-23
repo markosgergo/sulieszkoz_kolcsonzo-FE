@@ -27,11 +27,26 @@ function Row({ eszkoz, isAdmin, user, navigate, handleDelete, handleOpenQr, onRe
   const handleVisszavetel = async () => {
     if (window.confirm(`Biztosan visszaveszed a(z) ${eszkoz.nev} eszközt?`)) {
       try {
-        await ApiService.visszavetelByEszkozId(eszkoz.id);
-        alert("Eszköz sikeresen visszavéve!");
-        onRefresh(); 
+        // 1. Lekérjük az összes kölcsönzést, hogy megtaláljuk, melyik az aktív ehhez az eszközhöz
+        const osszesKolcsonzes = await ApiService.getAllKolcsonzes();
+        
+        // 2. Megkeressük azt a kölcsönzést, ami ehhez az eszközhöz tartozik és még nincs visszahozva
+        const aktivKolcsonzes = osszesKolcsonzes.find(k => 
+          k.eszkozId === eszkoz.id && 
+          !(k.visszavetelDatuma || k.visszahozvaDatum)
+        );
+
+        if (aktivKolcsonzes) {
+          // 3. Ha megvan a kölcsönzés ID-ja, meghívjuk a már működő visszavételt
+          await ApiService.visszavetel(aktivKolcsonzes.id);
+          alert("Eszköz sikeresen visszavéve!");
+          onRefresh(); // Lista frissítése
+        } else {
+          alert("Nem található aktív kölcsönzés ehhez az eszközhöz a rendszerben.");
+        }
       } catch (err) {
-        alert("Hiba a visszavétel során!");
+        console.error("Visszavételi hiba:", err);
+        alert("Hiba a visszavétel során! Részletek a konzolban.");
       }
     }
   };
