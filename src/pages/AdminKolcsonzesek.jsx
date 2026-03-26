@@ -8,11 +8,15 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
+import { Dialog, DialogTitle, DialogContent } from "@mui/material";
+import QrScanner from "../components/QrScanner";
 
 export default function AdminKolcsonzesek() {
   const [kolcsonzesek, setKolcsonzesek] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uzenet, setUzenet] = useState({ tipus: "success", szoveg: "" });
+  const [showScanner, setShowScanner] = useState(false);
 
   const adatokBetoltese = async () => {
     try {
@@ -43,6 +47,18 @@ export default function AdminKolcsonzesek() {
     }
   };
 
+  const handleScanVisszavetel = async (decodedEszkozId) => {
+    setShowScanner(false); // Bezárjuk a kamerát
+    try {
+      // Hívjuk a backendet a meglévő ApiService függvénnyel
+      await ApiService.visszavetelByEszkozId(decodedEszkozId);
+      setUzenet({ tipus: "success", szoveg: "Eszköz sikeresen visszavéve a QR kód alapján!" });
+      await adatokBetoltese(); // Frissítjük a táblázatot
+    } catch (err) {
+      setUzenet({ tipus: "error", szoveg: "Hiba: " + (err.response?.data?.hiba || "Ezt az eszközt nem kell visszavenni.") });
+    }
+  };
+
   if (loading) return (
     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
       <CircularProgress />
@@ -55,11 +71,23 @@ export default function AdminKolcsonzesek() {
         <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
           Kölcsönzések adminisztrációja
         </Typography>
-        <IconButton onClick={adatokBetoltese} color="primary" sx={{ border: '1px solid #e0e0e0' }}>
-          <RefreshIcon />
-        </IconButton>
+        <Box>
+          {/* ÚJ GOMB A QR VISSZAVÉTELHEZ */}
+          <Button 
+            variant="contained" 
+            color="secondary" 
+            startIcon={<QrCodeScannerIcon />} 
+            onClick={() => setShowScanner(true)}
+            sx={{ mr: 2 }}
+          >
+            Gyors Visszavétel
+          </Button>
+          
+          <IconButton onClick={adatokBetoltese} color="primary" sx={{ border: '1px solid #e0e0e0' }}>
+            <RefreshIcon />
+          </IconButton>
+        </Box>
       </Box>
-
       {uzenet.szoveg && (
         <Alert severity={uzenet.tipus} sx={{ mb: 3 }} onClose={() => setUzenet({ ...uzenet, szoveg: "" })}>
           {uzenet.szoveg}
@@ -140,6 +168,16 @@ export default function AdminKolcsonzesek() {
           </TableBody>
         </Table>
       </TableContainer>
+      {/* ÚJ SZKENNER ABLAK */}
+      <Dialog open={showScanner} onClose={() => setShowScanner(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ textAlign: 'center' }}>Eszköz QR kódjának beolvasása</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ textAlign: 'center', mb: 2 }}>
+            Mutasd a kamerának az eszközre ragasztott QR kódot a visszavételhez!
+          </Typography>
+          {showScanner && <QrScanner onScanSuccess={handleScanVisszavetel} />}
+        </DialogContent>
+      </Dialog>
     </Container>
   );
 }

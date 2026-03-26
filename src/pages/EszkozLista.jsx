@@ -23,6 +23,26 @@ import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
 function Row({ eszkoz, isAdmin, user, navigate, handleDelete, handleOpenQr, onRefresh }) {
   const [open, setOpen] = useState(false);
 
+
+  const handlePrintQr = async (eszkozId) => {
+    try {
+        // A te meglévő függvényed legenerálja a kép URL-jét
+        const imageUrl = await ApiService.getEszkozQrCode(eszkozId); 
+        
+        // Új ablak nyitása és azonnali nyomtatás
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head><title>QR Kód Nyomtatása</title></head>
+                <body style="text-align: center; margin-top: 50px;">
+                    <img src="${imageUrl}" style="width: 200px; height: 200px;" onload="window.print(); window.close();" />
+                </body>
+            </html>
+        `);
+    } catch (error) {
+        console.error("Hiba a QR kód lekérésekor", error);
+    }
+  };
   // ADMIN: Visszavétel funkció
   const handleVisszavetel = async () => {
     if (window.confirm(`Biztosan visszaveszed a(z) ${eszkoz.nev} eszközt?`)) {
@@ -277,7 +297,28 @@ export default function EszkozLista() {
           {qrLoading ? <CircularProgress /> : (
             <Box>
               <img src={qrImageUrl} alt="QR" style={{ width: '250px', height: '250px', border: '1px solid #ddd', borderRadius: '8px' }} />
-              <Typography variant="h6" sx={{ mt: 2 }}>SKU: {selectedEszkoz?.sku}</Typography>
+              <Typography variant="h6" sx={{ mt: 2, mb: 2 }}>SKU: {selectedEszkoz?.sku}</Typography>
+              
+              {/* ÚJ NYOMTATÁS GOMB */}
+              <Button 
+                variant="contained" 
+                color="secondary" 
+                onClick={() => {
+                  const printWindow = window.open('', '_blank');
+                  printWindow.document.write(`
+                      <html>
+                          <head><title>${selectedEszkoz?.nev} - QR Kód</title></head>
+                          <body style="text-align: center; margin-top: 50px;">
+                              <h2>${selectedEszkoz?.nev}</h2>
+                              <img src="${qrImageUrl}" style="width: 250px; height: 250px;" onload="window.print(); window.close();" />
+                              <p>SKU: ${selectedEszkoz?.sku}</p>
+                          </body>
+                      </html>
+                  `);
+                }}
+              >
+                QR Kód Nyomtatása
+              </Button>
             </Box>
           )}
         </DialogContent>
