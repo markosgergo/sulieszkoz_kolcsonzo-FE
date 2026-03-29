@@ -3,9 +3,9 @@ import {
   Container, Typography, Box, Button, Grid, Paper, 
   Card, CardContent, CircularProgress, Divider, Stack, Tooltip
 } from "@mui/material";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
-import ApiService from "../services/ApiService";
+import ApiService from "../../services/ApiService";
 
 // Ikonok
 import LoginIcon from '@mui/icons-material/Login';

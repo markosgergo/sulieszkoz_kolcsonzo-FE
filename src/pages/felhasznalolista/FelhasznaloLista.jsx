@@ -4,7 +4,7 @@ import {
   TableContainer, TableHead, TableRow, Chip, CircularProgress, Box, Button, IconButton, Tooltip 
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import ApiService from "../services/ApiService";
+import ApiService from "../../services/ApiService";
 import GroupIcon from '@mui/icons-material/Group';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete'; // Törlés ikon

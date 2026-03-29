@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import ApiService from "../services/ApiService";
-import { useAuth } from "../context/AuthContext";
+import ApiService from "../../services/ApiService";
+import { useAuth } from "../../context/AuthContext";
 import { 
   Container, Paper, Typography, TextField, Button, Stack, 
   Alert, Box, CircularProgress, MenuItem 

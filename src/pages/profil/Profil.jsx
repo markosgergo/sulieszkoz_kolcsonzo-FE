@@ -1,5 +1,5 @@
 import { Container, Paper, Typography, Box, Avatar, Divider, Grid, Chip, Button } from "@mui/material";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
 import BadgeIcon from "@mui/icons-material/Badge";

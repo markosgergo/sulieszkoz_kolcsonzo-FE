@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ApiService from "../services/ApiService";
+import ApiService from "../../services/ApiService";
 import { Container, Paper, TextField, Button, Typography, Stack } from "@mui/material";
 
 export default function Regisztracio() {

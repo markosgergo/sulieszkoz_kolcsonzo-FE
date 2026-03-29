@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import ApiService from "../services/ApiService";
+import ApiService from "../../services/ApiService";
 import { 
   Container, Typography, Paper, Table, TableBody, TableCell, 
   TableHead, TableRow, TableContainer, Button, Chip, Box, 
@@ -10,7 +10,7 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
 import { Dialog, DialogTitle, DialogContent } from "@mui/material";
-import QrScanner from "../components/QrScanner";
+import QrScanner from "../../components/QrScanner";
 
 export default function AdminKolcsonzesek() {
   const [kolcsonzesek, setKolcsonzesek] = useState([]);
