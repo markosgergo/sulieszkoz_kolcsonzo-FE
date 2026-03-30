@@ -1,52 +1,78 @@
-/* Belépő animáció */
+/* Konténer - tiszta, világos alap */
 .container {
-    animation: fadeIn 0.6s ease-out;
+    padding: 60px 20px;
+    background-color: #ffffff;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* A profil kártya modernizálása */
+/* Kártya - vékony, határozott keret, semmi árnyék */
 .profilePaper {
-    border-radius: 24px !important;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    overflow: hidden;
+    border-radius: 0 !important;
+    border: 1px solid #000000 !important; /* Tiszta fekete vékony vonal */
+    box-shadow: none !important;
+    background: #ffffff !important;
 }
 
-/* Dekorációs fejléc */
+/* Fejléc - csak egy tiszta szürke blokk */
 .headerDecoration {
-    background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
-    height: 100px;
+    background-color: #f1f5f9 !important;
+    height: 80px;
+    border-bottom: 1px solid #000000;
 }
 
-/* Avatar stílusa */
+/* Avatar - szögletes, keretben */
 .avatar {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease;
+    width: 100px !important;
+    height: 100px !important;
+    border-radius: 0 !important;
+    border: 1px solid #000000 !important;
+    margin-top: -50px;
+    margin-left: 24px;
+    background-color: #000000 !important;
 }
 
-.avatar:hover {
-    transform: scale(1.05);
-}
-
-/* Adat sorok animációja */
+/* Adat sorok - tiszta elválasztás */
 .infoRow {
-    padding: 12px;
-    border-radius: 12px;
-    transition: background-color 0.2s ease;
+    padding: 20px 24px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.infoRow:hover {
-    background-color: #f8fafc;
+.infoRow:last-child {
+    border-bottom: none;
 }
 
-/* Akció gombok */
+/* Szövegek - itt dől el a komolyság */
+.label {
+    font-size: 0.7rem;
+    font-weight: 400; /* Nem kell vastag, a vékonyság elegáns */
+    text-transform: uppercase;
+    color: #64748b;
+    letter-spacing: 1px;
+}
+
+.value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #000000;
+}
+
+/* Gomb - tiszta fekete tömb */
 .actionButton {
-    border-radius: 12px !important;
-    text-transform: none !important;
-    font-weight: 600 !important;
-    padding: 8px 24px !important;
+    border-radius: 0 !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 1px !important;
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    padding: 16px !important;
+    border: none !important;
+    width: 100%;
+}
+
+.actionButton:hover {
+    background-color: #334155 !important;
+    cursor: pointer;
 }

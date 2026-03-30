@@ -1,60 +1,84 @@
-/* A teljes oldal háttere */
+/* Visszaállított világos háttér */
 .pageWrapper {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    background-color: #f1f5f9; /* A letisztult, világos alap */
 }
 
-/* Belépő animáció a kártyának */
+/* Belépő animáció */
 .loginContainer {
-    animation: fadeInScale 0.5s ease-out;
+    animation: fadeIn 0.4s ease-out;
 }
 
-@keyframes fadeInScale {
-    from { 
-        opacity: 0; 
-        transform: scale(0.95) translateY(10px); 
-    }
-    to { 
-        opacity: 1; 
-        transform: scale(1) translateY(0); 
-    }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* A bejelentkező kártya (Paper) stílusa */
+/* A kártya - Vékony fekete kerettel, árnyék nélkül */
 .loginPaper {
-    padding: 40px !important;
-    border-radius: 24px !important;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    padding: 56px !important;
+    border-radius: 0 !important; /* Szögletes, ipari jelleg */
+    background-color: #ffffff !important;
+    border: 1px solid #000000 !important; /* Határozott fekete keret */
+    box-shadow: none !important;
+    max-width: 400px;
+    width: 100%;
 }
 
-/* Input mezők kerekítése */
+/* Input mezők - Szögletes, tiszta fehér */
 .inputField :global(.MuiOutlinedInput-root) {
-    border-radius: 12px;
-    background-color: #fcfcfc;
-    transition: all 0.2s ease;
-}
-
-.inputField :global(.MuiOutlinedInput-root:hover) {
+    border-radius: 0;
     background-color: #ffffff;
 }
 
-/* Belépés gomb modernizálása */
+.inputField :global(.MuiOutlinedInput-notchedOutline) {
+    border: 1px solid #e2e8f0;
+}
+
+/* Fókusz állapot - Fekete keret */
+.inputField :global(.Mui-focused .MuiOutlinedInput-notchedOutline) {
+    border-color: #000000 !important;
+    border-width: 1px !important;
+}
+
+/* Belépés gomb - Brutális fekete blokk */
 .loginButton {
-    padding: 12px !important;
-    border-radius: 12px !important;
-    text-transform: none !important;
-    font-weight: 700 !important;
-    font-size: 1rem !important;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4) !important;
-    transition: all 0.2s ease !important;
+    padding: 16px !important;
+    border-radius: 0 !important;
+    text-transform: uppercase !important;
+    font-weight: 800 !important;
+    font-size: 0.8rem !important;
+    letter-spacing: 2px !important;
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    margin-top: 12px !important;
+    transition: background-color 0.2s ease !important;
 }
 
 .loginButton:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4) !important;
+    background-color: #334155 !important;
+}
+
+/* Cím - Vastag és szigorú */
+.loginTitle {
+    font-weight: 900 !important;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #000000;
+    margin-bottom: 32px !important;
+    text-align: center;
+}
+
+/* Segédszöveg - Finom szürke */
+.helperText {
+    color: #94a3b8;
+    font-size: 0.65rem;
+    text-align: center;
+    margin-top: 24px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
 }

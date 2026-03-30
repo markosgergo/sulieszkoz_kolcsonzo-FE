@@ -1,75 +1,100 @@
-/* Belépő animáció az egész listának */
+/* Belépő animáció - maradhat, de rövidebb és feszesebb */
 .container {
-    animation: fadeIn 0.6s ease-out;
+    animation: fadeIn 0.4s ease-out;
+    background-color: #f8fafc; /* Világosszürke háttér az egész oldalnak */
+    min-height: 100vh;
+    padding-top: 24px;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Kereső sáv (Paper) modernizálása */
+/* Kereső sáv (Paper) - Határozottabb keretek */
 .filterPaper {
-    border-radius: 16px !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
-    border: 1px solid rgba(0, 0, 0, 0.05) !important;
-    overflow: hidden;
+    border-radius: 8px !important; /* Szögletesebb, komolyabb */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #ffffff !important;
 }
 
 /* Táblázat konténer */
 .tableContainer {
-    border-radius: 16px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
-    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #ffffff !important;
 }
 
-/* Táblázat fejléce */
+/* Táblázat fejléce - Itt hozzuk be a Navbar sötétkékjét */
 .tableHeader {
-    background-color: #f8faff !important;
+    background-color: #0f172a !important; /* Slate 900 - Komoly sötétkék */
 }
 
 .tableHeaderCell {
-    color: #475569 !important; /* Sötétszürke a kék helyett a profibb hatásért */
-    font-weight: 600 !important;
+    color: #ffffff !important; /* Fehér szöveg a sötétkék háttéren */
+    font-weight: 700 !important;
     text-transform: uppercase;
     font-size: 0.75rem !important;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
+    padding: 16px !important;
 }
 
 /* Sorok stílusa */
 .tableRow {
-    transition: background-color 0.2s ease;
+    transition: background-color 0.15s ease;
 }
 
 .tableRow:hover {
-    background-color: #f1f5f9 !important;
+    background-color: #f1f5f9 !important; /* Slate 100 hover */
 }
 
 /* Kinyitható rész (Collapse) belső doboza */
 .detailsBox {
-    background-color: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 12px !important;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    background-color: #f8fafc !important; /* Enyhén eltérő szürke a mélység miatt */
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    margin: 10px 0;
 }
 
 /* QR Dialógus stílusa */
 .qrDialog {
-    border-radius: 20px !important;
+    border-radius: 8px !important;
 }
 
-.qrImage {
-    transition: transform 0.3s ease;
-    cursor: zoom-in;
+/* Kiemelt adatok (pl. SKU vagy Név a táblázatban) */
+.importantText {
+    color: #0f172a;
+    font-weight: 700;
 }
 
-.qrImage:hover {
-    transform: scale(1.02);
-}
-
-/* Gombok finomítása */
+/* Gombok finomítása - Royal Blue és Navy kombináció */
 .actionButton {
     text-transform: none !important;
-    font-weight: 600 !important;
-    border-radius: 8px !important;
+    font-weight: 700 !important;
+    border-radius: 6px !important;
+    letter-spacing: 0.3px;
+}
+
+/* Elsődleges gombok (pl. Kölcsönzés) */
+.primaryAction {
+    background-color: #2563eb !important; /* Royal Blue */
+    color: white !important;
+}
+
+.primaryAction:hover {
+    background-color: #1d4ed8 !important;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3) !important;
+}
+
+/* Admin gombok (Szerkesztés/Törlés) */
+.adminAction {
+    color: #64748b !important;
+    border-color: #e2e8f0 !important;
+}
+
+.adminAction:hover {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
 }

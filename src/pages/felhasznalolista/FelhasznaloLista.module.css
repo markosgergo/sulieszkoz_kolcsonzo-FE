@@ -1,71 +1,91 @@
-/* Belépő animáció */
+/* Belépő animáció - Minimális, csak egy finom áttűnés */
 .container {
-    animation: fadeIn 0.5s ease-out;
+    animation: fadeIn 0.2s ease-in;
+    background-color: #ffffff;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-/* Táblázat konténer modernizálása */
+/* Táblázat konténer - Nulla kerekítés, vékony keret */
 .tableContainer {
-    border-radius: 20px !important; /* Extra kerekítés */
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08) !important;
-    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    border-radius: 0 !important; 
+    box-shadow: none !important;
+    border: 1px solid #000000 !important; /* Határozott fekete keret */
     background: #ffffff !important;
 }
 
-/* Fejléc stílusa - A korábbi kék helyett egy elegánsabb sötétszürke/kék árnyalat */
+/* Fejléc stílusa - Sötét blokk a kontraszt kedvéért */
 .tableHead {
-    background-color: #f1f5f9 !important;
+    background-color: #0f172a !important; /* A Navbar mélyszürke/fekete színe */
 }
 
 .headerCell {
-    color: #475569 !important;
-    font-weight: 700 !important;
+    color: #ffffff !important; /* Fehér szöveg a sötét fejen */
+    font-weight: 800 !important;
     text-transform: uppercase;
-    font-size: 0.75rem !important;
-    letter-spacing: 0.05em;
+    font-size: 0.7rem !important;
+    letter-spacing: 0.15em;
     padding: 16px !important;
+    border-bottom: 1px solid #000000 !important;
 }
 
-/* Sorok stílusa */
+/* Sorok stílusa - Tiszta elválasztás */
 .tableRow {
-    transition: background-color 0.2s ease;
+    transition: background-color 0.1s ease;
+    border-bottom: 1px solid #f1f5f9;
 }
 
 .tableRow:hover {
-    background-color: #f8fafc !important;
+    background-color: #f8fafc !important; /* Nagyon halvány szürke hover */
 }
 
-/* ID oszlop stílusa */
+.tableRow:last-child {
+    border-bottom: none;
+}
+
+/* ID oszlop - Precíziós adat */
 .idCell {
-    font-family: 'Monaco', 'Consolas', monospace;
-    color: #94a3b8;
-    font-size: 0.85rem;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 500;
 }
 
-/* Akció gombok finomítása */
+/* Akció gombok - Nincs scale és animáció, csak tiszta funkció */
 .deleteButton {
-    transition: all 0.2s ease !important;
+    color: #e11d48 !important; /* Komolyabb vörös */
+    transition: opacity 0.2s ease !important;
 }
 
 .deleteButton:hover {
-    background-color: #fef2f2 !important; /* Halvány piros háttér hoverkor */
-    transform: scale(1.1);
+    background-color: transparent !important;
+    opacity: 0.6;
+    transform: none !important; /* Törölve a játékos ugrálás */
 }
 
-/* Vissza gomb stílusa */
+/* Vissza gomb - Szögletes és funkcionális */
 .backButton {
-    border-radius: 10px !important;
-    text-transform: none !important;
-    font-weight: 600 !important;
-    border-color: #e2e8f0 !important;
-    color: #64748b !important;
+    border-radius: 0 !important;
+    text-transform: uppercase !important;
+    font-weight: 800 !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 1px;
+    border: 1px solid #000000 !important;
+    color: #000000 !important;
+    padding: 8px 20px !important;
 }
 
 .backButton:hover {
-    background-color: #f1f5f9 !important;
-    border-color: #cbd5e1 !important;
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* Cella tartalom finomítása */
+.cellText {
+    color: #0f172a;
+    font-weight: 600;
+    font-size: 0.85rem;
 }

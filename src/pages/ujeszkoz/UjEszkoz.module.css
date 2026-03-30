@@ -1,54 +1,93 @@
-/* Megjelenési animáció */
+/* Megjelenési animáció - marad a feszes 0.3s */
 .container {
-    animation: fadeIn 0.5s ease-out;
+    animation: fadeIn 0.3s ease-out;
+    background-color: #ffffff;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-/* Kártya stílusa */
+/* Kártya stílusa - Keret és árnyék nélkül, tiszta fehér */
 .formPaper {
-    border-radius: 20px !important;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05) !important;
-    border: 1px solid #edf2f7;
-    overflow: hidden;
+    border-radius: 0 !important; /* Teljesen szögletes */
+    box-shadow: none !important;
+    border: none !important; /* Keret eltávolítva */
+    background-color: #ffffff !important;
+    padding: 0 !important;
 }
 
-/* Input mezők modernizálása */
+/* Input mezők - Csak egy finom alsó vonal vagy tiszta kitöltés */
 .textField :global(.MuiOutlinedInput-root) {
-    border-radius: 12px;
-    background-color: #f8fafc;
-    transition: all 0.2s ease;
+    border-radius: 0px; 
+    background-color: #f1f5f9; /* Halvány szürke kitöltés a keret helyett */
+    transition: background-color 0.2s ease;
 }
 
+.textField :global(.MuiOutlinedInput-notchedOutline) {
+    border: none !important; /* Eltüntetjük a gyári keretet */
+}
+
+/* Hover és Fókusz állapotok kitöltéssel jelezve */
 .textField :global(.MuiOutlinedInput-root:hover) {
-    background-color: #ffffff;
+    background-color: #e2e8f0;
 }
 
 .textField :global(.Mui-focused) {
-    background-color: #ffffff;
+    background-color: #f8fafc !important;
+    /* Csak egy hangsúlyos alsó vonal fókuszban */
+    box-shadow: inset 0 -2px 0px #0f172a; 
 }
 
-/* Gombok stílusa */
+/* Mentés gomb - Marad a brutális fekete, de keret nélkül */
 .saveButton {
-    border-radius: 12px !important;
-    text-transform: none !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2) !important;
+    border-radius: 0 !important;
+    text-transform: uppercase !important;
+    font-weight: 900 !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 1.5px !important;
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+    padding: 14px 28px !important;
+    border: none !important;
 }
 
+.saveButton:hover {
+    background-color: #000000 !important;
+    /* Minimális eltolás, hogy érezhető legyen a kattintás */
+    transform: translateY(-1px);
+}
+
+/* Mégse gomb - Csak szöveg, semmi sallang */
 .cancelButton {
-    border-radius: 12px !important;
-    text-transform: none !important;
-    font-weight: 600 !important;
+    border-radius: 0 !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+    font-size: 0.75rem !important;
     color: #64748b !important;
-    border-color: #cbd5e1 !important;
+    border: none !important;
+    background: transparent !important;
 }
 
 .cancelButton:hover {
-    background-color: #f1f5f9 !important;
-    border-color: #94a3b8 !important;
+    color: #0f172a !important;
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Labelek - Szigorú és tiszta */
+.textField :global(.MuiInputLabel-root) {
+    font-weight: 800;
+    color: #0f172a;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+}
+
+/* Szekció elválasztó (ha van) */
+.divider {
+    height: 1px;
+    background-color: #f1f5f9;
+    margin: 24px 0;
+    border: none;
 }

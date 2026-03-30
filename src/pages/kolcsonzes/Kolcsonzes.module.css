@@ -1,57 +1,100 @@
-/* Megjelenési animáció */
+/* Megjelenési animáció - Feszes, nincs úszkálás */
 .container {
-    animation: slideUp 0.4s ease-out;
+    animation: fadeIn 0.2s ease-in;
 }
 
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-/* Kártya stílusa */
+/* Kártya stílusa - Nulla kerekítés, vékony fekete keret */
 .paper {
-    border-radius: 20px !important;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: 1px solid #000000 !important;
+    background: #ffffff !important;
     overflow: hidden;
 }
 
-/* Eszköz információs kártya (a formon belül) */
+/* Eszköz információs blokk - A gradiens helyett tiszta szürke */
 .eszkozInfo {
-    background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%);
-    border-radius: 12px;
-    border-left: 6px solid #3b82f6;
-    transition: transform 0.2s ease;
+    background: #f8fafc !important;
+    border-radius: 0;
+    border: none;
+    /* Csak egy vékony alsó vonal választja el */
+    border-bottom: 1px solid #e2e8f0;
+    padding: 24px !important;
+    transition: none;
 }
 
 .eszkozInfo:hover {
-    transform: translateX(4px);
+    transform: none; /* Nincs mozgás, ez egy statikus űrlap */
+    background-color: #f1f5f9 !important;
 }
 
-/* Input mezők finomítása */
+/* Input mezők - Szögletes és tiszta */
 .textField {
-    background-color: #fcfcfc;
+    background-color: #ffffff;
 }
 
 .textField :global(.MuiOutlinedInput-root) {
-    border-radius: 10px;
-    transition: all 0.2s ease;
+    border-radius: 0; /* Teljesen szögletes */
+    transition: none;
 }
 
-/* Gombok */
+.textField :global(.MuiOutlinedInput-notchedOutline) {
+    border: 1px solid #e2e8f0;
+}
+
+.textField :global(.Mui-focused .MuiOutlinedInput-notchedOutline) {
+    border-color: #000000 !important;
+    border-width: 1px !important; /* Maradjon vékony a vonal */
+}
+
+/* Gombok - Brutális fekete blokk */
 .submitButton {
-    border-radius: 12px !important;
-    text-transform: none !important;
-    font-size: 1rem !important;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+    border-radius: 0 !important;
+    text-transform: uppercase !important; /* Nagybetű = komolyság */
+    font-weight: 700 !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 2px !important;
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+    padding: 14px !important;
 }
 
+.submitButton:hover {
+    background-color: #334155 !important;
+}
+
+/* Mégse gomb - Csak szöveg */
 .cancelButton {
-    color: #94a3b8 !important;
-    text-transform: none !important;
+    color: #64748b !important;
+    text-transform: uppercase !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px;
 }
 
 .cancelButton:hover {
-    background-color: #f1f5f9 !important;
+    background-color: transparent !important;
+    color: #000000 !important;
+    text-decoration: underline;
+}
+
+/* Tipográfia a formon belül */
+.infoLabel {
+    font-size: 0.65rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.infoValue {
+    font-size: 0.9rem;
+    color: #000000;
+    font-weight: 600;
 }
