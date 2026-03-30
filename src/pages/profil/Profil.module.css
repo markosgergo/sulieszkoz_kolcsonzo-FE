@@ -1,0 +1,52 @@
+/* Belépő animáció */
+.container {
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* A profil kártya modernizálása */
+.profilePaper {
+    border-radius: 24px !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    overflow: hidden;
+}
+
+/* Dekorációs fejléc */
+.headerDecoration {
+    background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+    height: 100px;
+}
+
+/* Avatar stílusa */
+.avatar {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+}
+
+.avatar:hover {
+    transform: scale(1.05);
+}
+
+/* Adat sorok animációja */
+.infoRow {
+    padding: 12px;
+    border-radius: 12px;
+    transition: background-color 0.2s ease;
+}
+
+.infoRow:hover {
+    background-color: #f8fafc;
+}
+
+/* Akció gombok */
+.actionButton {
+    border-radius: 12px !important;
+    text-transform: none !important;
+    font-weight: 600 !important;
+    padding: 8px 24px !important;
+}
