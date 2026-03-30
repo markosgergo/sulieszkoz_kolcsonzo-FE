@@ -9,6 +9,9 @@ import {
   Box, Button, Grid, Collapse
 } from "@mui/material";
 
+// --- CSS MODUL IMPORT ---
+import styles from "./EszkozLista.module.css";
+
 // Ikonok
 import DeleteIcon from "@mui/icons-material/Delete";
 import QrCodeIcon from "@mui/icons-material/QrCode";
@@ -23,96 +26,68 @@ import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
 function Row({ eszkoz, isAdmin, user, navigate, handleDelete, handleOpenQr, onRefresh }) {
   const [open, setOpen] = useState(false);
 
-
-  const handlePrintQr = async (eszkozId) => {
-    try {
-        // A te meglévő függvényed legenerálja a kép URL-jét
-        const imageUrl = await ApiService.getEszkozQrCode(eszkozId); 
-        
-        // Új ablak nyitása és azonnali nyomtatás
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <html>
-                <head><title>QR Kód Nyomtatása</title></head>
-                <body style="text-align: center; margin-top: 50px;">
-                    <img src="${imageUrl}" style="width: 200px; height: 200px;" onload="window.print(); window.close();" />
-                </body>
-            </html>
-        `);
-    } catch (error) {
-        console.error("Hiba a QR kód lekérésekor", error);
-    }
-  };
-  // ADMIN: Visszavétel funkció
   const handleVisszavetel = async () => {
     if (window.confirm(`Biztosan visszaveszed a(z) ${eszkoz.nev} eszközt?`)) {
       try {
-        // 1. Lekérjük az összes kölcsönzést, hogy megtaláljuk, melyik az aktív ehhez az eszközhöz
         const osszesKolcsonzes = await ApiService.getAllKolcsonzes();
-        
-        // 2. Megkeressük azt a kölcsönzést, ami ehhez az eszközhöz tartozik és még nincs visszahozva
         const aktivKolcsonzes = osszesKolcsonzes.find(k => 
-          k.eszkozId === eszkoz.id && 
-          !(k.visszavetelDatuma || k.visszahozvaDatum)
+          k.eszkozId === eszkoz.id && !(k.visszavetelDatuma || k.visszahozvaDatum)
         );
 
         if (aktivKolcsonzes) {
-          // 3. Ha megvan a kölcsönzés ID-ja, meghívjuk a már működő visszavételt
           await ApiService.visszavetel(aktivKolcsonzes.id);
           alert("Eszköz sikeresen visszavéve!");
-          onRefresh(); // Lista frissítése
+          onRefresh();
         } else {
-          alert("Nem található aktív kölcsönzés ehhez az eszközhöz a rendszerben.");
+          alert("Nem található aktív kölcsönzés.");
         }
       } catch (err) {
-        console.error("Visszavételi hiba:", err);
-        alert("Hiba a visszavétel során! Részletek a konzolban.");
+        console.error(err);
+        alert("Hiba a visszavétel során!");
       }
     }
   };
 
-  // USER: Foglalás funkció (Backend módosítás nélkül, a meglévő createKolcsonzes-t használva)
   const handleFoglalas = async () => {
     if (window.confirm(`Szeretnéd lefoglalni a következőt: ${eszkoz.nev}?`)) {
       try {
         const foglalasAdat = {
           felhasznaloId: user.id, 
           eszkozId: eszkoz.id,
-          kiadoId: 1, // FONTOS: Itt egy létező Admin ID-t adj meg (pl. 1)
-          hatarido: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // +7 nap
+          kiadoId: 1, 
+          hatarido: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
         };
-
         await ApiService.createKolcsonzes(foglalasAdat);
         alert("Sikeres foglalás!");
         onRefresh();
       } catch (err) {
-        alert("Hiba a foglalásnál! (Ellenőrizd, hogy létezik-e az 1-es ID-jú admin)");
+        alert("Hiba a foglalásnál!");
       }
     }
   };
 
   return (
     <>
-      <TableRow hover sx={{ '& > *': { borderBottom: 'unset' } }}>
+      <TableRow className={styles.tableRow} sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell>
           <IconButton size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
         <TableCell>{eszkoz.id}</TableCell>
-        <TableCell sx={{ fontWeight: 'bold' }}>{eszkoz.nev}</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', color: '#1e293b' }}>{eszkoz.nev}</TableCell>
         <TableCell>{eszkoz.tipus}</TableCell>
         <TableCell>
           <Chip 
-            label={eszkoz.elerheto ? "Szabad" : "Kiadva / Foglalt"} 
+            label={eszkoz.elerheto ? "Szabad" : "Kiadva"} 
             color={eszkoz.elerheto ? "success" : "error"} 
+            variant="light" // Ha az MUI témád támogatja, ez lágyabb színt ad
             size="small" 
+            sx={{ fontWeight: 600, borderRadius: '6px' }}
           />
         </TableCell>
         <TableCell align="center">
           <Stack direction="row" spacing={1} justifyContent="center">
-            
-            {/* ADMIN Funkciók */}
             {isAdmin && (
               <>
                 {eszkoz.elerheto ? (
@@ -127,12 +102,12 @@ function Row({ eszkoz, isAdmin, user, navigate, handleDelete, handleOpenQr, onRe
               </>
             )}
 
-            {/* USER Funkció (Lefoglalás) - Csak ha szabad az eszköz és nem admin a user */}
             {!isAdmin && eszkoz.elerheto && (
               <Button 
                 variant="contained" 
                 size="small" 
                 color="secondary" 
+                className={styles.actionButton}
                 startIcon={<BookmarkAddIcon />}
                 onClick={handleFoglalas}
               >
@@ -140,7 +115,6 @@ function Row({ eszkoz, isAdmin, user, navigate, handleDelete, handleOpenQr, onRe
               </Button>
             )}
 
-            {/* Közös gombok (pl. QR kód) */}
             <IconButton color="secondary" onClick={() => handleOpenQr(eszkoz)} title="QR Kód">
               <QrCodeIcon/>
             </IconButton>
@@ -156,15 +130,19 @@ function Row({ eszkoz, isAdmin, user, navigate, handleDelete, handleOpenQr, onRe
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 2, p: 2, bgcolor: '#f9f9f9', borderRadius: 2, border: '1px solid #eee' }}>
-              <Typography variant="h6" gutterBottom color="primary">Részletek</Typography>
+            <Box className={styles.detailsBox} sx={{ margin: 2, p: 3 }}>
+              <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 700, color: '#334155' }}>
+                Eszköz részletei
+              </Typography>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="body2"><b>Leírás:</b> {eszkoz.leiras || "Nincs leírás."}</Typography>
+                  <Typography variant="body2" color="text.secondary"><b>Leírás:</b></Typography>
+                  <Typography variant="body1">{eszkoz.leiras || "Nincs megadva leírás."}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="body2"><b>SKU:</b> {eszkoz.sku || "Nincs SKU"}</Typography>
-                  <Typography variant="body2"><b>Státusz:</b> {eszkoz.elerheto ? "Kölcsönözhető" : "Foglalt/Kiadva"}</Typography>
+                  <Typography variant="body2" color="text.secondary"><b>Azonosítók:</b></Typography>
+                  <Typography variant="body1">SKU: {eszkoz.sku || "Nincs"}</Typography>
+                  <Typography variant="body1">ID: {eszkoz.id}</Typography>
                 </Grid>
               </Grid>
             </Box>
@@ -241,37 +219,68 @@ export default function EszkozLista() {
   if (loading) return <Box sx={{ textAlign: 'center', mt: 10 }}><CircularProgress /></Box>;
 
   return (
-    <Container sx={{ mt: 4, mb: 4 }}>
-      <Stack direction="row" justifyContent="space-between" sx={{ mb: 3 }}>
-        <Typography variant="h4" fontWeight="bold">Eszközök Kezelése</Typography>
-        {isAdmin && <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate("/eszkozok/uj")}>Új eszköz</Button>}
+    <Container maxWidth="lg" className={styles.container} sx={{ mt: 4, mb: 4 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
+        <Box>
+            <Typography variant="h4" fontWeight="bold" sx={{ color: '#1e293b' }}>Eszközök</Typography>
+            <Typography variant="body2" color="text.secondary">Leltár és kölcsönzések kezelése</Typography>
+        </Box>
+        {isAdmin && (
+            <Button 
+                variant="contained" 
+                className={styles.actionButton}
+                startIcon={<AddIcon />} 
+                onClick={() => navigate("/eszkozok/uj")}
+                sx={{ borderRadius: '10px', px: 3 }}
+            >
+                Új eszköz
+            </Button>
+        )}
       </Stack>
 
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Grid container spacing={2}>
+      <Paper className={styles.filterPaper} sx={{ p: 2, mb: 4 }}>
+        <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} sm={8}>
-            <TextField fullWidth placeholder="Keresés név alapján..." value={kereses} onChange={(e) => setKereses(e.target.value)}
-              InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }} />
+            <TextField 
+                fullWidth 
+                placeholder="Keresés név vagy típus alapján..." 
+                value={kereses} 
+                onChange={(e) => setKereses(e.target.value)}
+                variant="outlined"
+                InputProps={{ 
+                    startAdornment: <InputAdornment position="start"><SearchIcon color="action" /></InputAdornment>,
+                    sx: { borderRadius: '10px' }
+                }} 
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField select fullWidth label="Kategória" value={kategoria} onChange={(e) => setKategoria(e.target.value)}>
-              <MenuItem value="Mind">Összes</MenuItem>
-              <MenuItem value="laptop">Laptop</MenuItem>
-              <MenuItem value="tablet">Tablet</MenuItem>
+            <TextField 
+                select 
+                fullWidth 
+                label="Kategória" 
+                value={kategoria} 
+                onChange={(e) => setKategoria(e.target.value)}
+                InputProps={{ sx: { borderRadius: '10px' } }}
+            >
+              <MenuItem value="Mind">Összes kategória</MenuItem>
+              <MenuItem value="laptop">Laptopok</MenuItem>
+              <MenuItem value="tablet">Tabletek</MenuItem>
+              <MenuItem value="projektor">Projektorok</MenuItem>
             </TextField>
           </Grid>
         </Grid>
       </Paper>
 
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} className={styles.tableContainer}>
         <Table>
-          <TableHead sx={{ bgcolor: 'primary.main' }}>
+          <TableHead className={styles.tableHeader}>
             <TableRow>
-              <TableCell /><TableCell sx={{color: 'white'}}>ID</TableCell>
-              <TableCell sx={{color: 'white'}}>Név</TableCell>
-              <TableCell sx={{color: 'white'}}>Típus</TableCell>
-              <TableCell sx={{color: 'white'}}>Állapot</TableCell>
-              <TableCell align="center" sx={{color: 'white'}}>Műveletek</TableCell>
+              <TableCell />
+              <TableCell className={styles.tableHeaderCell}>ID</TableCell>
+              <TableCell className={styles.tableHeaderCell}>Eszköz neve</TableCell>
+              <TableCell className={styles.tableHeaderCell}>Típus</TableCell>
+              <TableCell className={styles.tableHeaderCell}>Állapot</TableCell>
+              <TableCell align="center" className={styles.tableHeaderCell}>Műveletek</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -289,29 +298,48 @@ export default function EszkozLista() {
             ))}
           </TableBody>
         </Table>
+        {szurtEszkozok.length === 0 && (
+            <Box sx={{ p: 5, textAlign: 'center' }}>
+                <Typography color="text.secondary">Nincs a keresésnek megfelelő eszköz.</Typography>
+            </Box>
+        )}
       </TableContainer>
 
-      <Dialog open={openQr} onClose={handleCloseQr}>
-        <DialogTitle sx={{ textAlign: 'center' }}>{selectedEszkoz?.nev}</DialogTitle>
+      <Dialog 
+        open={openQr} 
+        onClose={handleCloseQr}
+        PaperProps={{ className: styles.qrDialog }}
+      >
+        <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold' }}>{selectedEszkoz?.nev}</DialogTitle>
         <DialogContent sx={{ textAlign: 'center', p: 4 }}>
           {qrLoading ? <CircularProgress /> : (
             <Box>
-              <img src={qrImageUrl} alt="QR" style={{ width: '250px', height: '250px', border: '1px solid #ddd', borderRadius: '8px' }} />
-              <Typography variant="h6" sx={{ mt: 2, mb: 2 }}>SKU: {selectedEszkoz?.sku}</Typography>
+              <img 
+                src={qrImageUrl} 
+                alt="QR" 
+                className={styles.qrImage}
+                style={{ width: '220px', height: '220px', border: '1px solid #f1f5f9', padding: '10px', borderRadius: '12px' }} 
+              />
+              <Typography variant="h6" sx={{ mt: 2, color: '#64748b' }}>SKU: {selectedEszkoz?.sku}</Typography>
               
-              {/* ÚJ NYOMTATÁS GOMB */}
               <Button 
-                variant="contained" 
-                color="secondary" 
+                variant="outlined" 
+                fullWidth
+                className={styles.actionButton}
+                color="primary" 
+                sx={{ mt: 3 }}
                 onClick={() => {
                   const printWindow = window.open('', '_blank');
                   printWindow.document.write(`
                       <html>
-                          <head><title>${selectedEszkoz?.nev} - QR Kód</title></head>
-                          <body style="text-align: center; margin-top: 50px;">
-                              <h2>${selectedEszkoz?.nev}</h2>
-                              <img src="${qrImageUrl}" style="width: 250px; height: 250px;" onload="window.print(); window.close();" />
-                              <p>SKU: ${selectedEszkoz?.sku}</p>
+                          <head><title>${selectedEszkoz?.nev} - QR</title></head>
+                          <body style="text-align: center; font-family: sans-serif; padding-top: 50px;">
+                              <div style="border: 2px solid #eee; display: inline-block; padding: 20px; border-radius: 15px;">
+                                  <h2 style="margin-bottom: 5px;">${selectedEszkoz?.nev}</h2>
+                                  <p style="color: #666; margin-top: 0;">${selectedEszkoz?.tipus}</p>
+                                  <img src="${qrImageUrl}" style="width: 250px; height: 250px;" onload="window.print(); window.close();" />
+                                  <p style="font-weight: bold; font-size: 1.2rem;">SKU: ${selectedEszkoz?.sku}</p>
+                              </div>
                           </body>
                       </html>
                   `);

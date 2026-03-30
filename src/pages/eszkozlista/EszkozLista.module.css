@@ -1,0 +1,75 @@
+/* Belépő animáció az egész listának */
+.container {
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Kereső sáv (Paper) modernizálása */
+.filterPaper {
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    overflow: hidden;
+}
+
+/* Táblázat konténer */
+.tableContainer {
+    border-radius: 16px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Táblázat fejléce */
+.tableHeader {
+    background-color: #f8faff !important;
+}
+
+.tableHeaderCell {
+    color: #475569 !important; /* Sötétszürke a kék helyett a profibb hatásért */
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.05em;
+}
+
+/* Sorok stílusa */
+.tableRow {
+    transition: background-color 0.2s ease;
+}
+
+.tableRow:hover {
+    background-color: #f1f5f9 !important;
+}
+
+/* Kinyitható rész (Collapse) belső doboza */
+.detailsBox {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* QR Dialógus stílusa */
+.qrDialog {
+    border-radius: 20px !important;
+}
+
+.qrImage {
+    transition: transform 0.3s ease;
+    cursor: zoom-in;
+}
+
+.qrImage:hover {
+    transform: scale(1.02);
+}
+
+/* Gombok finomítása */
+.actionButton {
+    text-transform: none !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+}
