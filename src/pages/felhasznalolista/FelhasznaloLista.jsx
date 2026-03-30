@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { 
   Container, Typography, Paper, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, Chip, CircularProgress, Box, Button, IconButton, Tooltip 
+  TableContainer, TableHead, TableRow, Chip, CircularProgress, Box, Button, IconButton, Tooltip, Stack 
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import ApiService from "../../services/ApiService";
 import GroupIcon from '@mui/icons-material/Group';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import DeleteIcon from '@mui/icons-material/Delete'; // Törlés ikon
+import DeleteIcon from '@mui/icons-material/Delete';
+
+// CSS Modul import
+import styles from "./FelhasznaloLista.module.css";
 
 export default function FelhasznaloLista() {
   const [users, setUsers] = useState([]);
@@ -29,17 +32,14 @@ export default function FelhasznaloLista() {
     }
   };
 
-  // TÖRLÉS FUNKCIÓ
   const handleDelete = async (id, nev) => {
     if (window.confirm(`Biztosan törölni szeretnéd ${nev} felhasználót?`)) {
       try {
         await ApiService.deleteFelhasznalo(id);
-        // Frissítjük a listát (eltávolítjuk a töröltet az állapotból, hogy ne kelljen újra tölteni az egészet)
         setUsers(users.filter(user => (user.id || user.felhasznaloId) !== id));
         alert("Felhasználó sikeresen törölve!");
       } catch (err) {
-        console.error("Hiba a törlés során:", err);
-        alert("Nem sikerült törölni a felhasználót! (Lehet, hogy van aktív kölcsönzése?)");
+        alert("Nem sikerült törölni! Ellenőrizd, nincs-e aktív kölcsönzése.");
       }
     }
   };
@@ -51,68 +51,87 @@ export default function FelhasznaloLista() {
   );
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <GroupIcon sx={{ mr: 2, fontSize: 32, color: 'primary.main' }} />
-          <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-            Felhasználók kezelése
+    <Container maxWidth="md" className={styles.container} sx={{ mt: 6, mb: 6 }}>
+      {/* Fejléc rész */}
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
+        <Box>
+          <Stack direction="row" alignItems="center" spacing={2}>
+            <GroupIcon sx={{ fontSize: 35, color: '#3b82f6' }} />
+            <Typography variant="h4" sx={{ fontWeight: 800, color: '#1e293b' }}>
+              Felhasználók
+            </Typography>
+          </Stack>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Rendszerfelhasználók jogköreinek és adatainak kezelése
           </Typography>
         </Box>
+        
         <Button 
           variant="outlined" 
           component={Link} 
           to="/" 
           startIcon={<ArrowBackIcon />}
-          sx={{ borderRadius: 2 }}
+          className={styles.backButton}
         >
-          Vissza
+          Vissza a főoldalra
         </Button>
-      </Box>
+      </Stack>
       
-      <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 3, overflow: 'hidden' }}>
+      {/* Táblázat */}
+      <TableContainer component={Paper} className={styles.tableContainer}>
         <Table>
-          <TableHead sx={{ bgcolor: 'primary.main' }}>
+          <TableHead className={styles.tableHead}>
             <TableRow>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>ID</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Név</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>E-mail cím</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="center">Jog</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="center">Műveletek</TableCell>
+              <TableCell className={styles.headerCell}>ID</TableCell>
+              <TableCell className={styles.headerCell}>Név</TableCell>
+              <TableCell className={styles.headerCell}>E-mail cím</TableCell>
+              <TableCell className={styles.headerCell} align="center">Jogkör</TableCell>
+              <TableCell className={styles.headerCell} align="center">Műveletek</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {users.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
-                  Nincsenek regisztrált felhasználók.
+                <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
+                  <Typography color="text.secondary">Nincsenek regisztrált felhasználók.</Typography>
                 </TableCell>
               </TableRow>
             ) : (
               users.map((user) => {
                 const userId = user.id || user.felhasznaloId;
+                const isAdmin = user.szerepkorNev === "ADMIN";
+                
                 return (
-                  <TableRow key={userId} hover>
-                    <TableCell>#{userId}</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>{user.nev}</TableCell>
-                    <TableCell>{user.email}</TableCell>
+                  <TableRow key={userId} className={styles.tableRow}>
+                    <TableCell className={styles.idCell}>#{userId}</TableCell>
+                    <TableCell>
+                        <Typography sx={{ fontWeight: 700, color: '#334155' }}>
+                            {user.nev}
+                        </Typography>
+                    </TableCell>
+                    <TableCell sx={{ color: '#64748b' }}>{user.email}</TableCell>
                     <TableCell align="center">
                       <Chip 
                         label={user.szerepkorNev} 
                         size="small" 
-                        color={user.szerepkorNev === "ADMIN" ? "secondary" : "primary"}
-                        sx={{ fontWeight: 'bold', minWidth: '80px' }}
+                        color={isAdmin ? "secondary" : "primary"}
+                        variant={isAdmin ? "contained" : "outlined"}
+                        sx={{ 
+                            fontWeight: 700, 
+                            minWidth: '90px',
+                            borderRadius: '8px',
+                            fontSize: '0.7rem'
+                        }}
                       />
                     </TableCell>
                     <TableCell align="center">
-                      {/* Törlés gomb */}
-                      <Tooltip title="Felhasználó törlése">
+                      <Tooltip title="Felhasználó végleges törlése">
                         <IconButton 
+                          className={styles.deleteButton}
                           color="error" 
                           onClick={() => handleDelete(userId, user.nev)}
-                          // Opcionális: Az admin ne tudja saját magát törölni (ha tudjuk a saját ID-nkat)
                         >
-                          <DeleteIcon />
+                          <DeleteIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
                     </TableCell>
@@ -124,9 +143,10 @@ export default function FelhasznaloLista() {
         </Table>
       </TableContainer>
       
-      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="body2" color="text.secondary">
-          Összesen: <strong>{users.length}</strong> regisztrált tag
+      {/* Alsó összesítő */}
+      <Box sx={{ mt: 3, p: 2, display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid #f1f5f9' }}>
+        <Typography variant="body2" sx={{ color: '#94a3b8' }}>
+          Összesen <strong style={{ color: '#475569' }}>{users.length}</strong> aktív felhasználó a rendszerben
         </Typography>
       </Box>
     </Container>

@@ -1,0 +1,71 @@
+/* Belépő animáció */
+.container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Táblázat konténer modernizálása */
+.tableContainer {
+    border-radius: 20px !important; /* Extra kerekítés */
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    background: #ffffff !important;
+}
+
+/* Fejléc stílusa - A korábbi kék helyett egy elegánsabb sötétszürke/kék árnyalat */
+.tableHead {
+    background-color: #f1f5f9 !important;
+}
+
+.headerCell {
+    color: #475569 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.05em;
+    padding: 16px !important;
+}
+
+/* Sorok stílusa */
+.tableRow {
+    transition: background-color 0.2s ease;
+}
+
+.tableRow:hover {
+    background-color: #f8fafc !important;
+}
+
+/* ID oszlop stílusa */
+.idCell {
+    font-family: 'Monaco', 'Consolas', monospace;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+/* Akció gombok finomítása */
+.deleteButton {
+    transition: all 0.2s ease !important;
+}
+
+.deleteButton:hover {
+    background-color: #fef2f2 !important; /* Halvány piros háttér hoverkor */
+    transform: scale(1.1);
+}
+
+/* Vissza gomb stílusa */
+.backButton {
+    border-radius: 10px !important;
+    text-transform: none !important;
+    font-weight: 600 !important;
+    border-color: #e2e8f0 !important;
+    color: #64748b !important;
+}
+
+.backButton:hover {
+    background-color: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+}
