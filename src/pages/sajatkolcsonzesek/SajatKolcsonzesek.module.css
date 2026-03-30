@@ -1,0 +1,64 @@
+/* Belépő animáció */
+.container {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Modern táblázat konténer */
+.tablePaper {
+    border-radius: 16px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid #eef2f6 !important;
+    overflow: hidden;
+}
+
+/* Fejléc stílusa */
+.tableHeader {
+    background-color: #f8fafc !important;
+}
+
+.headerCell {
+    color: #64748b !important;
+    font-size: 0.85rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    padding: 20px !important;
+}
+
+/* Sorok stílusa */
+.rowActive {
+    transition: all 0.2s ease;
+}
+
+.rowReturned {
+    background-color: #fafafa !important;
+    filter: grayscale(0.5);
+    opacity: 0.8;
+}
+
+/* Késésben lévő sor kiemelése */
+.rowOverdue {
+    background-color: #fff1f2 !important; /* Nagyon halvány piros */
+}
+
+/* Eszköznév kiemelése */
+.deviceName {
+    color: #1e293b;
+    font-weight: 700 !important;
+}
+
+/* Dátum szekció */
+.dateInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
