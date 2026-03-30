@@ -1,0 +1,75 @@
+/* Fő konténer animációja belépéskor */
+.mainContainer {
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Kártyák modernizálása */
+.statPaper {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    background: linear-gradient(to bottom, #ffffff, #fafafa) !important;
+}
+
+.statPaper:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Feature kártyák a vendég oldalon */
+.featureCard {
+    background: #ffffff !important;
+    border-radius: 20px !important;
+    border: 1px solid transparent !important;
+    transition: all 0.3s ease !important;
+}
+
+.featureCard:hover {
+    background: rgba(25, 118, 210, 0.02) !important;
+    border-color: rgba(25, 118, 210, 0.1) !important;
+}
+
+/* Gombok finomítása */
+.actionButton {
+    text-transform: none !important; /* Ne legyen minden nagybetűs */
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: none !important;
+}
+
+.actionButton:hover {
+    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2) !important;
+}
+
+/* Diák dashboard kártya üveg-effekt szerűsége */
+.userMainCard {
+    background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Egy kis dekoratív kör a háttérbe */
+.userMainCard::after {
+    content: "";
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+/* Dash border az új kölcsönzés doboznál */
+.dashedBox {
+    transition: all 0.3s ease;
+}
+
+.dashedBox:hover {
+    border-color: #1976d2 !important;
+    background-color: #ffffff !important;
+}

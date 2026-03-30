@@ -7,6 +7,9 @@ import { useAuth } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
 import ApiService from "../../services/ApiService";
 
+// --- CSS MODUL IMPORTÁLÁSA ---
+import styles from "./Home.module.css";
+
 // Ikonok
 import LoginIcon from '@mui/icons-material/Login';
 import LaptopMacIcon from '@mui/icons-material/LaptopMac';
@@ -29,10 +32,26 @@ const PublicLanding = () => (
     </Typography>
     
     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" sx={{ mb: 8, px: 2 }}>
-      <Button variant="contained" size="large" component={Link} to="/login" startIcon={<LoginIcon />} sx={{ px: 4, py: 1.5, borderRadius: 3 }}>
+      <Button 
+        variant="contained" 
+        size="large" 
+        component={Link} 
+        to="/login" 
+        startIcon={<LoginIcon />} 
+        className={styles.actionButton} // CLASS HOZZÁADVA
+        sx={{ px: 4, py: 1.5, borderRadius: 3 }}
+      >
         Bejelentkezés
       </Button>
-      <Button variant="outlined" size="large" component={Link} to="/regisztracio" startIcon={<AppRegistrationIcon />} sx={{ px: 4, py: 1.5, borderRadius: 3 }}>
+      <Button 
+        variant="outlined" 
+        size="large" 
+        component={Link} 
+        to="/regisztracio" 
+        startIcon={<AppRegistrationIcon />} 
+        className={styles.actionButton} // CLASS HOZZÁADVA
+        sx={{ px: 4, py: 1.5, borderRadius: 3 }}
+      >
         Regisztráció
       </Button>
     </Stack>
@@ -46,6 +65,7 @@ const PublicLanding = () => (
         <Grid item xs={12} sm={6} md={4} key={index}>
           <Paper 
             elevation={0} 
+            className={styles.featureCard} // CLASS HOZZÁADVA
             sx={{ 
               p: 4, 
               bgcolor: 'rgba(25, 118, 210, 0.04)', 
@@ -54,9 +74,7 @@ const PublicLanding = () => (
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              textAlign: 'center',
-              transition: 'transform 0.2s',
-              '&:hover': { transform: 'translateY(-5px)' }
+              textAlign: 'center'
             }}
           >
             <Box sx={{ color: 'primary.main', mb: 2 }}>{item.icon}</Box>
@@ -88,7 +106,10 @@ const UserDashboard = () => {
       
       <Grid container spacing={3} sx={{ mb: 6 }}>
         <Grid item xs={12} md={7}>
-          <Card sx={{ bgcolor: 'primary.main', color: 'white', borderRadius: 4, height: '100%', boxShadow: 4 }}>
+          <Card 
+            className={styles.userMainCard} // CLASS HOZZÁADVA
+            sx={{ color: 'white', borderRadius: 4, height: '100%', boxShadow: 4 }}
+          >
             <CardContent sx={{ p: 4 }}>
               <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>Kölcsönzési állapotod</Typography>
               <Typography variant="h3" sx={{ my: 2, fontWeight: 'bold' }}>{activeCount} eszköz</Typography>
@@ -101,6 +122,7 @@ const UserDashboard = () => {
                 variant="contained" 
                 component={Link} 
                 to="/sajat-kolcsonzesek" 
+                className={styles.actionButton} // CLASS HOZZÁADVA
                 sx={{ bgcolor: 'white', color: 'primary.main', fontWeight: 'bold', '&:hover': { bgcolor: '#f5f5f5' } }}
               >
                 Részletek megtekintése
@@ -110,7 +132,10 @@ const UserDashboard = () => {
         </Grid>
         
         <Grid item xs={12} md={5}>
-          <Paper sx={{ p: 4, borderRadius: 4, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', bgcolor: 'grey.50', border: '1px dashed #ccc' }}>
+          <Paper 
+            className={styles.dashedBox} // CLASS HOZZÁADVA
+            sx={{ p: 4, borderRadius: 4, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', bgcolor: 'grey.50', border: '1px dashed #ccc' }}
+          >
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>Új kölcsönzés indítása</Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
               Nézd meg az aktuálisan elérhető készletet és foglald le a tanuláshoz szükséges eszközöket online.
@@ -176,7 +201,11 @@ const AdminDashboard = () => {
       <Grid container spacing={3}>
         {StatKartyak.map((stat, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
-            <Paper elevation={3} sx={{ p: 3, textAlign: 'center', borderTop: `6px solid ${stat.color}`, borderRadius: 3 }}>
+            <Paper 
+              elevation={3} 
+              className={styles.statPaper} // CLASS HOZZÁADVA
+              sx={{ p: 3, textAlign: 'center', borderTop: `6px solid ${stat.color}`, borderRadius: 3 }}
+            >
               <Typography variant="subtitle2" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 1 }}>
                 {stat.label}
               </Typography>
@@ -193,17 +222,17 @@ const AdminDashboard = () => {
       <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold' }}>Gyors elérésű funkciók</Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={4}>
-          <Button variant="contained" fullWidth component={Link} to="/admin/kolcsonzesek" startIcon={<HistoryIcon />} sx={{ py: 2 }}>
+          <Button variant="contained" fullWidth component={Link} to="/admin/kolcsonzesek" startIcon={<HistoryIcon />} className={styles.actionButton} sx={{ py: 2 }}>
             Kölcsönzések kezelése
           </Button>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Button variant="outlined" fullWidth component={Link} to="/eszkozok/uj" startIcon={<AddCircleOutlineIcon />} sx={{ py: 2 }}>
+          <Button variant="outlined" fullWidth component={Link} to="/eszkozok/uj" startIcon={<AddCircleOutlineIcon />} className={styles.actionButton} sx={{ py: 2 }}>
             Új eszköz felvitele
           </Button>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Button variant="outlined" fullWidth color="success" component={Link} to="/admin/felhasznalok" startIcon={<GroupIcon />} sx={{ py: 2 }}>
+          <Button variant="outlined" fullWidth color="success" component={Link} to="/admin/felhasznalok" startIcon={<GroupIcon />} className={styles.actionButton} sx={{ py: 2 }}>
             Felhasználók kezelése
           </Button>
         </Grid>
@@ -217,7 +246,11 @@ export default function Home() {
   const { user } = useAuth();
 
   return (
-    <Container maxWidth="lg" sx={{ minHeight: '80vh' }}>
+    <Container 
+        maxWidth="lg" 
+        sx={{ minHeight: '80vh' }} 
+        className={styles.mainContainer} // CLASS HOZZÁADVA
+    >
       {!user ? (
         <PublicLanding />
       ) : (
