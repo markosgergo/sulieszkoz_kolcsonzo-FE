@@ -1,0 +1,57 @@
+/* Megjelenési animáció */
+.container {
+    animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Kártya stílusa */
+.paper {
+    border-radius: 20px !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+/* Eszköz információs kártya (a formon belül) */
+.eszkozInfo {
+    background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%);
+    border-radius: 12px;
+    border-left: 6px solid #3b82f6;
+    transition: transform 0.2s ease;
+}
+
+.eszkozInfo:hover {
+    transform: translateX(4px);
+}
+
+/* Input mezők finomítása */
+.textField {
+    background-color: #fcfcfc;
+}
+
+.textField :global(.MuiOutlinedInput-root) {
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+/* Gombok */
+.submitButton {
+    border-radius: 12px !important;
+    text-transform: none !important;
+    font-size: 1rem !important;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+}
+
+.cancelButton {
+    color: #94a3b8 !important;
+    text-transform: none !important;
+}
+
+.cancelButton:hover {
+    background-color: #f1f5f9 !important;
+}
