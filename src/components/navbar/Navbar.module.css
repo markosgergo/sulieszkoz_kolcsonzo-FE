@@ -1,0 +1,57 @@
+/* Sötét, komoly háttér (Deep Navy / Slate) */
+.navBar {
+    background-color: #0f172a !important; /* Nagyon sötét kék */
+    border-bottom: 2px solid #1e293b !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+    color: #f8fafc !important;
+}
+
+/* Logó: Nincs gradiens, csak tiszta, vastag fehér betűk */
+.logo {
+    font-weight: 800 !important;
+    letter-spacing: 0.5px;
+    color: #ffffff !important;
+    text-transform: uppercase;
+    font-family: 'Inter', 'Roboto', sans-serif !important;
+}
+
+/* Navigációs gombok: határozott, elegáns szürke */
+.navButton {
+    color: #94a3b8 !important; /* Slate szürke */
+    text-transform: none !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    padding: 6px 16px !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+}
+
+.navButton:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Regisztráció: Markáns kék, semmi átlátszóság */
+.registerButton {
+    background-color: #2563eb !important; /* Royal Blue */
+    color: #ffffff !important;
+    border: none !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2) !important;
+}
+
+.registerButton:hover {
+    background-color: #1d4ed8 !important;
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.4) !important;
+}
+
+/* Új eszköz gomb: Üzleti zöld kiemelés */
+.adminButton {
+    color: #4ade80 !important; /* Világosabb zöld a sötét háttéren */
+    border: 1px solid rgba(74, 222, 128, 0.3) !important;
+}
+
+.adminButton:hover {
+    background-color: rgba(74, 222, 128, 0.1) !important;
+    border-color: #4ade80 !important;
+}
