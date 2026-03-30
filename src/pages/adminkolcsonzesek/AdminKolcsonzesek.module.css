@@ -1,0 +1,56 @@
+.container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.tableContainer {
+    border-radius: 16px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    overflow: hidden;
+}
+
+.tableHead {
+    background-color: #f8fafc !important;
+}
+
+.headerCell {
+    color: #64748b !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.05em;
+}
+
+.tableRow {
+    transition: all 0.2s ease;
+}
+
+.tableRow:hover {
+    background-color: #f1f5f9 !important;
+}
+
+.returnedRow {
+    background-color: rgba(248, 250, 252, 0.8);
+}
+
+.actionButton {
+    border-radius: 8px !important;
+    text-transform: none !important;
+    font-weight: 600 !important;
+}
+
+.scannerDialog {
+    border-radius: 24px !important;
+}
+
+.scannerFrame {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 4px solid #f1f5f9;
+    margin-top: 16px;
+}

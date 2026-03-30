@@ -3,8 +3,12 @@ import ApiService from "../../services/ApiService";
 import { 
   Container, Typography, Paper, Table, TableBody, TableCell, 
   TableHead, TableRow, TableContainer, Button, Chip, Box, 
-  CircularProgress, Alert, IconButton, Tooltip 
+  CircularProgress, Alert, IconButton, Tooltip, Stack 
 } from "@mui/material";
+
+// CSS Modul importálása
+import styles from "./AdminKolcsonzesek.module.css";
+
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -22,10 +26,9 @@ export default function AdminKolcsonzesek() {
     try {
       setLoading(true);
       const data = await ApiService.getAllKolcsonzes();
-      console.log("Backend adatok ellenőrzése:", data); // Itt látod majd a konzolban a mezőneveket!
       setKolcsonzesek(data);
     } catch (err) {
-      console.error("Hiba a kölcsönzések lekérésekor:", err);
+      console.error("Hiba:", err);
       setUzenet({ tipus: "error", szoveg: "Nem sikerült betölteni a listát." });
     } finally {
       setLoading(false);
@@ -48,14 +51,13 @@ export default function AdminKolcsonzesek() {
   };
 
   const handleScanVisszavetel = async (decodedEszkozId) => {
-    setShowScanner(false); // Bezárjuk a kamerát
+    setShowScanner(false);
     try {
-      // Hívjuk a backendet a meglévő ApiService függvénnyel
       await ApiService.visszavetelByEszkozId(decodedEszkozId);
-      setUzenet({ tipus: "success", szoveg: "Eszköz sikeresen visszavéve a QR kód alapján!" });
-      await adatokBetoltese(); // Frissítjük a táblázatot
+      setUzenet({ tipus: "success", szoveg: "Eszköz visszavéve a QR kód alapján!" });
+      await adatokBetoltese();
     } catch (err) {
-      setUzenet({ tipus: "error", szoveg: "Hiba: " + (err.response?.data?.hiba || "Ezt az eszközt nem kell visszavenni.") });
+      setUzenet({ tipus: "error", szoveg: "Hiba: " + (err.response?.data?.hiba || "Sikertelen beolvasás.") });
     }
   };
 
@@ -66,94 +68,93 @@ export default function AdminKolcsonzesek() {
   );
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-          Kölcsönzések adminisztrációja
-        </Typography>
+    <Container maxWidth="lg" className={styles.container} sx={{ mt: 4, mb: 4 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
         <Box>
-          {/* ÚJ GOMB A QR VISSZAVÉTELHEZ */}
+          <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1e293b' }}>
+            Kölcsönzések kezelése
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Aktív folyamatok és visszavételezés
+          </Typography>
+        </Box>
+        <Stack direction="row" spacing={2}>
           <Button 
             variant="contained" 
             color="secondary" 
+            className={styles.actionButton}
             startIcon={<QrCodeScannerIcon />} 
             onClick={() => setShowScanner(true)}
-            sx={{ mr: 2 }}
           >
             Gyors Visszavétel
           </Button>
-          
-          <IconButton onClick={adatokBetoltese} color="primary" sx={{ border: '1px solid #e0e0e0' }}>
-            <RefreshIcon />
-          </IconButton>
-        </Box>
-      </Box>
+          <Tooltip title="Frissítés">
+            <IconButton onClick={adatokBetoltese} sx={{ border: '1px solid #e2e8f0' }}>
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      </Stack>
+
       {uzenet.szoveg && (
-        <Alert severity={uzenet.tipus} sx={{ mb: 3 }} onClose={() => setUzenet({ ...uzenet, szoveg: "" })}>
+        <Alert severity={uzenet.tipus} sx={{ mb: 3, borderRadius: '12px' }} onClose={() => setUzenet({ ...uzenet, szoveg: "" })}>
           {uzenet.szoveg}
         </Alert>
       )}
 
-      <TableContainer component={Paper} elevation={3}>
+      <TableContainer component={Paper} className={styles.tableContainer}>
         <Table>
-          <TableHead sx={{ bgcolor: '#f5f5f5' }}>
+          <TableHead className={styles.tableHead}>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Eszköz</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Kölcsönző</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Határidő</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Státusz</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold' }}>Művelet</TableCell>
+              <TableCell className={styles.headerCell}>Eszköz / ID</TableCell>
+              <TableCell className={styles.headerCell}>Kölcsönző</TableCell>
+              <TableCell className={styles.headerCell}>Határidő</TableCell>
+              <TableCell className={styles.headerCell}>Státusz</TableCell>
+              <TableCell align="center" className={styles.headerCell}>Művelet</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {kolcsonzesek.map((k) => {
-              // MEGOLDÁS: Csak akkor visszahozott, ha a mező létezik ÉS van benne érték.
-              // A Boolean() kezeli a null, undefined és üres string eseteket is.
               const isVisszahozva = Boolean(k.visszavetelDatuma || k.visszahozvaDatum);
-              
-              const hataridoDate = new Date(k.hatarido);
-              const ma = new Date();
-              ma.setHours(0, 0, 0, 0); 
-              const isExpired = !isVisszahozva && hataridoDate < ma;
+              const isExpired = !isVisszahozva && new Date(k.hatarido) < new Date().setHours(0,0,0,0);
 
               return (
                 <TableRow 
                   key={k.id} 
-                  sx={{ 
-                    bgcolor: isVisszahozva ? 'rgba(0, 0, 0, 0.03)' : 'inherit'
-                  }}
+                  className={`${styles.tableRow} ${isVisszahozva ? styles.returnedRow : ""}`}
                 >
                   <TableCell>
-                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{k.eszkozNev}</Typography>
-                    <Typography variant="caption" color="text.secondary">#{k.eszkozId}</Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 600 }}>{k.eszkozNev}</Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', bgcolor: '#f1f5f9', px: 0.5, borderRadius: 1 }}>
+                        #{k.eszkozId}
+                    </Typography>
                   </TableCell>
                   <TableCell>{k.felhasznaloNev || "N/A"}</TableCell>
                   <TableCell>
-                    <Typography sx={{ color: isExpired ? 'error.main' : 'inherit', fontWeight: isExpired ? 'bold' : 'normal' }}>
+                    <Typography variant="body2" sx={{ color: isExpired ? 'error.main' : 'inherit', fontWeight: isExpired ? 700 : 400 }}>
                       {k.hatarido}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    {isVisszahozva ? (
-                      <Chip label="Visszahozva" size="small" variant="outlined" />
-                    ) : (
-                      <Chip 
-                        label={isExpired ? "Késésben" : "Kiadva"} 
-                        color={isExpired ? "error" : "primary"} 
-                        size="small" 
-                      />
-                    )}
+                    <Chip 
+                      label={isVisszahozva ? "Visszahozva" : (isExpired ? "Késésben" : "Kiadva")} 
+                      color={isVisszahozva ? "default" : (isExpired ? "error" : "primary")} 
+                      size="small" 
+                      variant={isVisszahozva ? "outlined" : "contained"}
+                      sx={{ fontWeight: 600, borderRadius: '6px' }}
+                    />
                   </TableCell>
                   <TableCell align="center">
                     {isVisszahozva ? (
-                      <Box sx={{ color: 'text.disabled', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <InventoryIcon sx={{ mr: 1, fontSize: 18 }} />
-                        <Typography variant="body2">Raktáron</Typography>
-                      </Box>
+                      <Stack direction="row" spacing={1} justifyContent="center" sx={{ color: 'text.disabled' }}>
+                        <InventoryIcon fontSize="small" />
+                        <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase' }}>Raktáron</Typography>
+                      </Stack>
                     ) : (
                       <Button 
                         variant="contained" 
                         color="success" 
+                        className={styles.actionButton}
                         startIcon={<CheckCircleIcon />}
                         onClick={() => handleVisszavetel(k.id)}
                         size="small"
@@ -168,14 +169,22 @@ export default function AdminKolcsonzesek() {
           </TableBody>
         </Table>
       </TableContainer>
-      {/* ÚJ SZKENNER ABLAK */}
-      <Dialog open={showScanner} onClose={() => setShowScanner(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ textAlign: 'center' }}>Eszköz QR kódjának beolvasása</DialogTitle>
+
+      <Dialog 
+        open={showScanner} 
+        onClose={() => setShowScanner(false)} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{ className: styles.scannerDialog }}
+      >
+        <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold' }}>QR Visszavétel</DialogTitle>
         <DialogContent>
-          <Typography variant="body2" sx={{ textAlign: 'center', mb: 2 }}>
-            Mutasd a kamerának az eszközre ragasztott QR kódot a visszavételhez!
+          <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary' }}>
+            Olvasd be az eszköz kódját a gyors visszavételhez!
           </Typography>
-          {showScanner && <QrScanner onScanSuccess={handleScanVisszavetel} />}
+          <Box className={styles.scannerFrame}>
+            {showScanner && <QrScanner onScanSuccess={handleScanVisszavetel} />}
+          </Box>
         </DialogContent>
       </Dialog>
     </Container>
