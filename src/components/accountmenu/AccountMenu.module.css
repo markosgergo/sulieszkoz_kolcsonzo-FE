@@ -1,0 +1,86 @@
+/* Az Avatar gomb stílusa a Navbarban */
+.avatarButton {
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.2s ease !important;
+}
+
+.avatarButton:hover {
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* A legördülő menü papírja (PaperProps-hoz) */
+.menuPaper {
+    filter: drop-shadow(0px 8px 24px rgba(0,0,0,0.2)) !important;
+    margin-top: 12px !important;
+    min-width: 240px !important;
+    border-radius: 8px !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #ffffff !important;
+    overflow: visible !important;
+}
+
+/* A menü tetején lévő kis nyíl */
+.menuPaper::before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 14px;
+    width: 10px;
+    height: 10px;
+    background-color: #ffffff;
+    transform: translateY(-50%) rotate(45deg);
+    z-index: 0;
+    border-left: 1px solid #e2e8f0;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Felhasználói infó rész a menü tetején */
+.userInfo {
+    padding: 16px;
+    background-color: #f8fafc;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.userName {
+    font-weight: 800 !important;
+    color: #0f172a;
+    line-height: 1.2;
+}
+
+.userEmail {
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Menüpontok stílusa */
+.menuItem {
+    padding: 10px 16px !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    color: #334155 !important;
+    transition: all 0.2s ease !important;
+}
+
+.menuItem:hover {
+    background-color: #f1f5f9 !important;
+    color: #2563eb !important;
+}
+
+/* Kijelentkezés gomb speciális stílusa */
+.logoutItem {
+    color: #e11d48 !important;
+    font-weight: 700 !important;
+}
+
+.logoutItem:hover {
+    background-color: #fff1f2 !important;
+}
+
+/* Admin tétel */
+.adminItem {
+    color: #16a34a !important;
+}

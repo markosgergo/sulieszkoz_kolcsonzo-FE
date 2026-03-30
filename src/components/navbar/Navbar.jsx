@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { AppBar, Toolbar, Typography, Button, Box, Container } from "@mui/material";
-import AccountMenu from "../AccountMenu";
+import AccountMenu from "../accountmenu/AccountMenu";
 import styles from "./Navbar.module.css"; 
 
 export default function Navbar() {
