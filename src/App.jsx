@@ -1,16 +1,16 @@
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import EszkozLista from "./pages/EszkozLista";
-import UjEszkoz from "./pages/UjEszkoz";
+import Home from "./pages/home/Home";
+import Login from "./pages/login/Login";
+import EszkozLista from "./pages/eszkozlista/EszkozLista";
+import UjEszkoz from "./pages/ujeszkoz/UjEszkoz";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Kolcsonzes from "./pages/Kolcsonzes";
-import Regisztracio from "./pages/Regisztracio";
-import SajatKolcsonzesek from "./pages/SajatKolcsonzesek";
-import AdminKolcsonzesek from "./pages/AdminKolcsonzesek";
-import Profil from "./pages/Profil";
-import FelhasznaloLista from "./pages/FelhasznaloLista";
+import Kolcsonzes from "./pages/kolcsonzes/Kolcsonzes";
+import Regisztracio from "./pages/regisztracio/Regisztracio";
+import SajatKolcsonzesek from "./pages/sajatkolcsonzesek/SajatKolcsonzesek";
+import AdminKolcsonzesek from "./pages/adminkolcsonzesek/AdminKolcsonzesek";
+import Profil from "./pages/profil/Profil";
+import FelhasznaloLista from "./pages/felhasznalolista/FelhasznaloLista";
 
 function App() {
   return (
