@@ -11,16 +11,23 @@ import {
   Alert,
   MenuItem,
   Box,
-  Divider
+  Divider,
+  InputAdornment
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
+import InventoryIcon from '@mui/icons-material/Inventory';
+import CategoryIcon from '@mui/icons-material/Category';
+import QrCodeIcon from '@mui/icons-material/QrCode';
+
+// CSS Modul import
+import styles from "./UjEszkoz.module.css";
 
 export default function UjEszkoz() {
   const [nev, setNev] = useState("");
-  const [tipus, setTipus] = useState("laptop"); // Alapértelmezett érték
+  const [tipus, setTipus] = useState("laptop");
   const [sku, setSku] = useState("");
-  const [leiras, setLeiras] = useState(""); // Itt az új mezőnk!
+  const [leiras, setLeiras] = useState("");
   const [hiba, setHiba] = useState("");
   const [loading, setLoading] = useState(false);
   
@@ -33,9 +40,9 @@ export default function UjEszkoz() {
 
     const ujEszkoz = {
       nev,
-      tipus: tipus.toLowerCase(), // Konzisztencia a szűrés miatt
+      tipus: tipus.toLowerCase(),
       sku,
-      leiras, // Küldjük a leírást is
+      leiras,
       elerheto: true 
     };
 
@@ -43,7 +50,6 @@ export default function UjEszkoz() {
       await ApiService.createEszkoz(ujEszkoz);
       navigate("/eszkozok"); 
     } catch (error) {
-      console.error("Hiba az eszköz mentésekor:", error);
       setHiba("Nem sikerült elmenteni az eszközt. Lehet, hogy már létezik ilyen SKU?");
     } finally {
       setLoading(false);
@@ -51,21 +57,24 @@ export default function UjEszkoz() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 6, mb: 6 }}>
-      <Paper elevation={4} sx={{ p: 4, borderRadius: 3 }}>
-        <Typography variant="h4" sx={{ mb: 1, fontWeight: 'bold', color: 'primary.main' }}>
-          Új eszköz
-        </Typography>
+    <Container maxWidth="sm" className={styles.container} sx={{ mt: 8, mb: 8 }}>
+      <Paper elevation={0} className={styles.formPaper} sx={{ p: { xs: 3, md: 5 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, gap: 1.5 }}>
+          <InventoryIcon color="primary" sx={{ fontSize: 32 }} />
+          <Typography variant="h4" sx={{ fontWeight: 800, color: '#1e293b' }}>
+            Új eszköz
+          </Typography>
+        </Box>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Töltsd ki az alábbi adatokat az eszköz regisztrálásához.
+          Adja meg a leltári adatokat és a technikai paramétereket.
         </Typography>
         
-        <Divider sx={{ mb: 3 }} />
+        <Divider sx={{ mb: 4, opacity: 0.6 }} />
 
-        {hiba && <Alert severity="error" sx={{ mb: 2 }}>{hiba}</Alert>}
+        {hiba && <Alert severity="error" sx={{ mb: 3, borderRadius: '10px' }}>{hiba}</Alert>}
 
         <form onSubmit={handleSubmit}>
-          <Stack spacing={2.5}>
+          <Stack spacing={3}>
             <TextField
               label="Eszköz teljes neve"
               placeholder="pl. Asus Zenbook UX430"
@@ -73,6 +82,7 @@ export default function UjEszkoz() {
               onChange={(e) => setNev(e.target.value)}
               required
               fullWidth
+              className={styles.textField}
             />
 
             <TextField
@@ -82,6 +92,14 @@ export default function UjEszkoz() {
               onChange={(e) => setTipus(e.target.value)}
               required
               fullWidth
+              className={styles.textField}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <CategoryIcon color="action" fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
             >
               <MenuItem value="laptop">Laptop</MenuItem>
               <MenuItem value="tablet">Tablet</MenuItem>
@@ -97,6 +115,14 @@ export default function UjEszkoz() {
               onChange={(e) => setSku(e.target.value)}
               required
               fullWidth
+              className={styles.textField}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <QrCodeIcon color="action" fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
             />
 
             <TextField
@@ -107,11 +133,12 @@ export default function UjEszkoz() {
               multiline
               rows={4}
               fullWidth
-              helperText="Minden fontos technikai adatot ide írj."
+              className={styles.textField}
+              helperText="Minden fontos technikai adatot ide írjon."
             />
 
             <Box sx={{ pt: 2 }}>
-              <Stack direction="row" spacing={2}>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <Button
                   type="submit"
                   variant="contained"
@@ -119,18 +146,18 @@ export default function UjEszkoz() {
                   fullWidth
                   disabled={loading}
                   startIcon={<SaveIcon />}
-                  sx={{ borderRadius: 2, py: 1.2 }}
+                  className={styles.saveButton}
+                  sx={{ py: 1.5 }}
                 >
-                  {loading ? "Mentés..." : "Eszköz mentése"}
+                  {loading ? "Mentés..." : "Eszköz rögzítése"}
                 </Button>
                 
                 <Button 
                   variant="outlined" 
-                  color="inherit"
                   fullWidth
                   onClick={() => navigate("/eszkozok")}
                   startIcon={<CancelIcon />}
-                  sx={{ borderRadius: 2 }}
+                  className={styles.cancelButton}
                 >
                   Mégse
                 </Button>

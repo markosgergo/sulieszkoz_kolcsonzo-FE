@@ -1,0 +1,54 @@
+/* Megjelenési animáció */
+.container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Kártya stílusa */
+.formPaper {
+    border-radius: 20px !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid #edf2f7;
+    overflow: hidden;
+}
+
+/* Input mezők modernizálása */
+.textField :global(.MuiOutlinedInput-root) {
+    border-radius: 12px;
+    background-color: #f8fafc;
+    transition: all 0.2s ease;
+}
+
+.textField :global(.MuiOutlinedInput-root:hover) {
+    background-color: #ffffff;
+}
+
+.textField :global(.Mui-focused) {
+    background-color: #ffffff;
+}
+
+/* Gombok stílusa */
+.saveButton {
+    border-radius: 12px !important;
+    text-transform: none !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2) !important;
+}
+
+.cancelButton {
+    border-radius: 12px !important;
+    text-transform: none !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+    border-color: #cbd5e1 !important;
+}
+
+.cancelButton:hover {
+    background-color: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+}
