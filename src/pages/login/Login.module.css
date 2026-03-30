@@ -1,0 +1,60 @@
+/* A teljes oldal háttere */
+.pageWrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+/* Belépő animáció a kártyának */
+.loginContainer {
+    animation: fadeInScale 0.5s ease-out;
+}
+
+@keyframes fadeInScale {
+    from { 
+        opacity: 0; 
+        transform: scale(0.95) translateY(10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1) translateY(0); 
+    }
+}
+
+/* A bejelentkező kártya (Paper) stílusa */
+.loginPaper {
+    padding: 40px !important;
+    border-radius: 24px !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+/* Input mezők kerekítése */
+.inputField :global(.MuiOutlinedInput-root) {
+    border-radius: 12px;
+    background-color: #fcfcfc;
+    transition: all 0.2s ease;
+}
+
+.inputField :global(.MuiOutlinedInput-root:hover) {
+    background-color: #ffffff;
+}
+
+/* Belépés gomb modernizálása */
+.loginButton {
+    padding: 12px !important;
+    border-radius: 12px !important;
+    text-transform: none !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4) !important;
+    transition: all 0.2s ease !important;
+}
+
+.loginButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4) !important;
+}
