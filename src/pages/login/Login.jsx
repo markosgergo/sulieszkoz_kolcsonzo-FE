@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Container, Paper, TextField, Button, Typography, Stack, Box, InputAdornment, Alert } from "@mui/material";
+import { 
+  Container, Paper, TextField, Button, Typography, Stack, Box, 
+  InputAdornment, Alert, IconButton 
+} from "@mui/material";
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import LoginIcon from '@mui/icons-material/Login';
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import styles from "./Login.module.css";
 
 export default function Login() {
@@ -12,6 +17,8 @@ export default function Login() {
   const [jelszo, setJelszo] = useState("");
   const [hiba, setHiba] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -81,29 +88,41 @@ export default function Login() {
                   ),
                 }}
               />
-              <TextField
-                label="Jelszó"
-                type="password"
-                value={jelszo}
-                onChange={(e) => setJelszo(e.target.value)}
-                fullWidth
-                required
-                disabled={loading}
-                className={styles.inputField}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockIcon color="action" fontSize="small" />
-                    </InputAdornment>
-                  ),
-                }}
-              />
+              
+             <TextField
+  label="Jelszó"
+  type={showPassword ? "text" : "password"}
+  value={jelszo}
+  onChange={(e) => setJelszo(e.target.value)}
+  fullWidth
+  required
+  disabled={loading}
+  className={styles.inputField}
+  InputProps={{
+    startAdornment: (
+      <InputAdornment position="start">
+        <LockIcon color="action" fontSize="small" />
+      </InputAdornment>
+    ),
+    endAdornment: (
+      <InputAdornment position="end">
+        <IconButton
+          onClick={() => setShowPassword(!showPassword)}
+          onMouseDown={(e) => e.preventDefault()}
+          edge="end"
+        >
+          {showPassword ? <Visibility /> : <VisibilityOff />}
+        </IconButton>
+      </InputAdornment>
+    ),
+  }}
+/>
               
               <Button 
                 type="submit" 
                 variant="contained" 
                 size="large" 
-                fullWidth
+                fullWidth 
                 disabled={loading}
                 className={styles.loginButton}
               >
