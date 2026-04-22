@@ -48,10 +48,23 @@ export default function AdminKolcsonzesek() {
     }
   };
 
-  const handleScanVisszavetel = async (decodedEszkozId) => {
+  const parseQrEszkozId = (qrString) => {
+    const match = qrString.match(/ESZKOZ_ID[:\s]*(\d+)/i);
+    if (match) return match[1];
+    const numOnly = qrString.trim();
+    if (/^\d+$/.test(numOnly)) return numOnly;
+    return null;
+  };
+
+  const handleScanVisszavetel = async (decodedText) => {
     setShowScanner(false);
+    const eszkozId = parseQrEszkozId(decodedText);
+    if (!eszkozId) {
+      setUzenet({ tipus: "error", szoveg: "Érvénytelen QR kód formátum: " + decodedText });
+      return;
+    }
     try {
-      await ApiService.visszavetelByEszkozId(decodedEszkozId);
+      await ApiService.visszavetelByEszkozId(eszkozId);
       setUzenet({ tipus: "success", szoveg: "Eszköz visszavéve a QR kód alapján!" });
       await adatokBetoltese();
     } catch (err) {
