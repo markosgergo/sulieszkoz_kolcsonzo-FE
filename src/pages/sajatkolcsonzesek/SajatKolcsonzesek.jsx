@@ -8,8 +8,6 @@ import {
 import HistoryIcon from '@mui/icons-material/History';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-
-// CSS Modul import
 import styles from "./SajatKolcsonzesek.module.css";
 
 export default function SajatKolcsonzesek() {
@@ -26,8 +24,8 @@ export default function SajatKolcsonzesek() {
       setLoading(true);
       const data = await ApiService.getSajatKolcsonzesek();
       const rendezettData = data.sort((a, b) => {
-        if (a.visszavetelDatuma === null && b.visszavetelDatuma !== null) return -1;
-        if (a.visszavetelDatuma !== null && b.visszavetelDatuma === null) return 1;
+        if (!a.visszavetelDatuma && !!b.visszavetelDatuma) return -1;
+        if (!!a.visszavetelDatuma && !b.visszavetelDatuma) return 1;
         return new Date(b.kiadasDatuma) - new Date(a.kiadasDatuma);
       });
       setKolcsonzesek(rendezettData);
@@ -85,7 +83,7 @@ export default function SajatKolcsonzesek() {
               </TableRow>
             ) : (
               kolcsonzesek.map((k) => {
-                const isVisszahozva = k.visszavetelDatuma !== null;
+                const isVisszahozva = !!k.visszavetelDatuma;
                 const hataridoDate = new Date(k.hatarido);
                 const ma = new Date();
                 ma.setHours(0, 0, 0, 0);

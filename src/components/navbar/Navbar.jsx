@@ -9,7 +9,7 @@ export default function Navbar() {
 
   return (
     <AppBar position="sticky" elevation={0} className={styles.navBar}>
-      <Container maxWidth="xl"> {/* Szélesebb konténer a komolyabb hatáshoz */}
+      <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography 
             variant="h6" 

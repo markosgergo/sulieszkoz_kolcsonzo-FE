@@ -6,9 +6,7 @@ import {
   CircularProgress, Alert, IconButton, Tooltip, Stack 
 } from "@mui/material";
 
-// CSS Modul importálása
 import styles from "./AdminKolcsonzesek.module.css";
-
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -115,7 +113,7 @@ export default function AdminKolcsonzesek() {
           </TableHead>
           <TableBody>
             {kolcsonzesek.map((k) => {
-              const isVisszahozva = Boolean(k.visszavetelDatuma || k.visszahozvaDatum);
+              const isVisszahozva = !!(k.visszavetelDatuma || k.visszahozvaDatum);
               const isExpired = !isVisszahozva && new Date(k.hatarido) < new Date().setHours(0,0,0,0);
 
               return (

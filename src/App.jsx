@@ -24,7 +24,6 @@ function App() {
         <Route path="/admin/kolcsonzesek" element={<AdminKolcsonzesek />} />
         <Route path="/profil" element={<Profil />} />
         <Route path="/admin/felhasznalok" element={<FelhasznaloLista />} />
-        {/* Ezeket is érdemes védeni, ha csak belépett felhasználó láthatja */}
         <Route path="/eszkozok" element={
           <ProtectedRoute><EszkozLista /></ProtectedRoute>
         } />

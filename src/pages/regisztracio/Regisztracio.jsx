@@ -5,16 +5,12 @@ import {
   Container, Paper, TextField, Button, Typography, Stack, 
   Box, InputAdornment, IconButton 
 } from "@mui/material";
-
-// Ikonok
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import BadgeIcon from '@mui/icons-material/Badge';
 import EmailIcon from '@mui/icons-material/Email';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
-// CSS Modul import
 import styles from "./Regisztracio.module.css";
 
 export default function Regisztracio() {

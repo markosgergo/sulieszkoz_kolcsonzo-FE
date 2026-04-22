@@ -1,20 +1,22 @@
 import { useState, useEffect } from "react";
 import { 
   Container, Typography, Paper, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, Chip, CircularProgress, Box, Button, IconButton, Tooltip, Stack 
+  TableContainer, TableHead, TableRow, CircularProgress, Box, Button,
+  IconButton, Tooltip, Stack, Select, MenuItem, Alert, Snackbar
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import ApiService from "../../services/ApiService";
 import GroupIcon from '@mui/icons-material/Group';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
-
-// CSS Modul import
 import styles from "./FelhasznaloLista.module.css";
 
 export default function FelhasznaloLista() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [betoltesHiba, setBetoltesHiba] = useState("");
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+  const [mentesAlatt, setMentesAlatt] = useState(null);
 
   useEffect(() => {
     loadUsers();
@@ -25,22 +27,44 @@ export default function FelhasznaloLista() {
       setLoading(true);
       const data = await ApiService.getAllFelhasznalo();
       setUsers(data);
-    } catch (err) {
-      console.error("Hiba a felhasználók betöltésekor:", err);
+    } catch {
+      setBetoltesHiba("Nem sikerült betölteni a felhasználókat.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id, nev) => {
-    if (window.confirm(`Biztosan törölni szeretnéd ${nev} felhasználót?`)) {
-      try {
-        await ApiService.deleteFelhasznalo(id);
-        setUsers(users.filter(user => (user.id || user.felhasznaloId) !== id));
-        alert("Felhasználó sikeresen törölve!");
-      } catch (err) {
-        alert("Nem sikerült törölni! Ellenőrizd, nincs-e aktív kölcsönzése.");
-      }
+    if (!window.confirm(`Biztosan törölni szeretnéd ${nev} felhasználót?`)) return;
+    try {
+      await ApiService.deleteFelhasznalo(id);
+      setUsers((prev) => prev.filter(u => (u.id || u.felhasznaloId) !== id));
+      setSnackbar({ open: true, message: "Felhasználó sikeresen törölve!", severity: "success" });
+    } catch {
+      setSnackbar({ open: true, message: "Törlés sikertelen! Lehet aktív kölcsönzése van.", severity: "error" });
+    }
+  };
+
+  const handleRoleChange = async (userId, ujSzerepkor) => {
+    setMentesAlatt(userId);
+    try {
+      const frissitett = await ApiService.modositSzerepkor(userId, ujSzerepkor);
+      setUsers((prev) =>
+        prev.map(u =>
+          (u.id || u.felhasznaloId) === userId
+            ? { ...u, szerepkorNev: frissitett.szerepkorNev }
+            : u
+        )
+      );
+      setSnackbar({ open: true, message: `Szerepkör módosítva: ${frissitett.szerepkorNev}`, severity: "success" });
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.hiba || "Szerepkör módosítása sikertelen!",
+        severity: "error"
+      });
+    } finally {
+      setMentesAlatt(null);
     }
   };
 
@@ -52,7 +76,6 @@ export default function FelhasznaloLista() {
 
   return (
     <Container maxWidth="md" className={styles.container} sx={{ mt: 6, mb: 6 }}>
-      {/* Fejléc rész */}
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
         <Box>
           <Stack direction="row" alignItems="center" spacing={2}>
@@ -65,19 +88,15 @@ export default function FelhasznaloLista() {
             Rendszerfelhasználók jogköreinek és adatainak kezelése
           </Typography>
         </Box>
-        
-        <Button 
-          variant="outlined" 
-          component={Link} 
-          to="/" 
-          startIcon={<ArrowBackIcon />}
-          className={styles.backButton}
-        >
+        <Button variant="outlined" component={Link} to="/" startIcon={<ArrowBackIcon />}>
           Vissza a főoldalra
         </Button>
       </Stack>
+
+      {betoltesHiba && (
+        <Alert severity="error" sx={{ mb: 2 }}>{betoltesHiba}</Alert>
+      )}
       
-      {/* Táblázat */}
       <TableContainer component={Paper} className={styles.tableContainer}>
         <Table>
           <TableHead className={styles.tableHead}>
@@ -85,7 +104,7 @@ export default function FelhasznaloLista() {
               <TableCell className={styles.headerCell}>ID</TableCell>
               <TableCell className={styles.headerCell}>Név</TableCell>
               <TableCell className={styles.headerCell}>E-mail cím</TableCell>
-              <TableCell className={styles.headerCell} align="center">Jogkör</TableCell>
+              <TableCell className={styles.headerCell} align="center">Szerepkör</TableCell>
               <TableCell className={styles.headerCell} align="center">Műveletek</TableCell>
             </TableRow>
           </TableHead>
@@ -93,42 +112,52 @@ export default function FelhasznaloLista() {
             {users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
-                  <Typography color="text.secondary">Nincsenek regisztrált felhasználók.</Typography>
+                  Nincsenek regisztrált felhasználók.
                 </TableCell>
               </TableRow>
             ) : (
               users.map((user) => {
                 const userId = user.id || user.felhasznaloId;
-                const isAdmin = user.szerepkorNev === "ADMIN";
-                
                 return (
                   <TableRow key={userId} className={styles.tableRow}>
                     <TableCell className={styles.idCell}>#{userId}</TableCell>
                     <TableCell>
-                        <Typography sx={{ fontWeight: 700, color: '#334155' }}>
-                            {user.nev}
-                        </Typography>
+                      <Typography sx={{ fontWeight: 700, color: '#334155' }}>{user.nev}</Typography>
                     </TableCell>
                     <TableCell sx={{ color: '#64748b' }}>{user.email}</TableCell>
+                    
                     <TableCell align="center">
-                      <Chip 
-                        label={user.szerepkorNev} 
-                        size="small" 
-                        color={isAdmin ? "secondary" : "primary"}
-                        variant={isAdmin ? "contained" : "outlined"}
+                      <Select
+                        size="small"
+                        value={user.szerepkorNev || "FELHASZNALO"}
+                        onChange={(e) => handleRoleChange(userId, e.target.value)}
+                        disabled={mentesAlatt === userId}
                         sx={{ 
-                            fontWeight: 700, 
-                            minWidth: '90px',
-                            borderRadius: '8px',
-                            fontSize: '0.7rem'
+                          minWidth: '140px',
+                          fontSize: '0.8rem',
+                          fontWeight: 'bold',
+                          color: user.szerepkorNev === "ADMIN"
+                            ? 'error.main'
+                            : user.szerepkorNev === "ALKALMAZOTT"
+                            ? 'info.main'
+                            : 'primary.main',
+                          '.MuiOutlinedInput-notchedOutline': { borderColor: '#cbd5e1' }
                         }}
-                      />
+                      >
+                        <MenuItem value="FELHASZNALO">FELHASZNALO</MenuItem>
+                        <MenuItem value="ALKALMAZOTT">ALKALMAZOTT</MenuItem>
+                        <MenuItem value="ADMIN">ADMIN</MenuItem>
+                      </Select>
+                      {mentesAlatt === userId && (
+                        <CircularProgress size={14} sx={{ ml: 1, verticalAlign: 'middle' }} />
+                      )}
                     </TableCell>
+
                     <TableCell align="center">
                       <Tooltip title="Felhasználó végleges törlése">
-                        <IconButton 
+                        <IconButton
                           className={styles.deleteButton}
-                          color="error" 
+                          color="error"
                           onClick={() => handleDelete(userId, user.nev)}
                         >
                           <DeleteIcon fontSize="small" />
@@ -142,13 +171,21 @@ export default function FelhasznaloLista() {
           </TableBody>
         </Table>
       </TableContainer>
-      
-      {/* Alsó összesítő */}
-      <Box sx={{ mt: 3, p: 2, display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid #f1f5f9' }}>
-        <Typography variant="body2" sx={{ color: '#94a3b8' }}>
-          Összesen <strong style={{ color: '#475569' }}>{users.length}</strong> aktív felhasználó a rendszerben
-        </Typography>
-      </Box>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar(s => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity={snackbar.severity}
+          onClose={() => setSnackbar(s => ({ ...s, open: false }))}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

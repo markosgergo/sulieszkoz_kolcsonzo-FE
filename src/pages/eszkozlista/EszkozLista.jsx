@@ -8,11 +8,7 @@ import {
   TextField, MenuItem, InputAdornment, Dialog, DialogTitle, DialogContent,
   Box, Button, Grid, Collapse
 } from "@mui/material";
-
-// --- CSS MODUL IMPORT ---
 import styles from "./EszkozLista.module.css";
-
-// Ikonok
 import DeleteIcon from "@mui/icons-material/Delete";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import AssignmentIcon from "@mui/icons-material/Assignment"; 
@@ -54,7 +50,7 @@ function Row({ eszkoz, isAdmin, user, navigate, handleDelete, handleOpenQr, onRe
         const foglalasAdat = {
           felhasznaloId: user.id, 
           eszkozId: eszkoz.id,
-          kiadoId: 1, 
+          kiadoId: user.id, 
           hatarido: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
         };
         await ApiService.createKolcsonzes(foglalasAdat);

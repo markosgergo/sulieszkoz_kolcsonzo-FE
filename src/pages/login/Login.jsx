@@ -1,30 +1,31 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Container, Paper, TextField, Button, Typography, Stack, Box, InputAdornment } from "@mui/material";
-
-// Ikonok a profibb kinézethez
+import { Container, Paper, TextField, Button, Typography, Stack, Box, InputAdornment, Alert } from "@mui/material";
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import LoginIcon from '@mui/icons-material/Login';
-
-// CSS Modul import
 import styles from "./Login.module.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [jelszo, setJelszo] = useState("");
+  const [hiba, setHiba] = useState("");
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setHiba("");
+    setLoading(true);
     try {
-      await login(email, password); 
-      navigate("/eszkozok"); 
-    } catch (error) {
-      console.error("Login hiba:", error);
-      alert("Hibás email vagy jelszó!");
+      await login(email, jelszo);
+      navigate("/");
+    } catch (err) {
+      setHiba(err.response?.data?.hiba || "Hibás e-mail cím vagy jelszó!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,6 +56,12 @@ export default function Login() {
             </Typography>
           </Box>
 
+          {hiba && (
+            <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+              {hiba}
+            </Alert>
+          )}
+
           <form onSubmit={handleSubmit}>
             <Stack spacing={3}>
               <TextField
@@ -64,6 +71,7 @@ export default function Login() {
                 onChange={(e) => setEmail(e.target.value)}
                 fullWidth
                 required
+                disabled={loading}
                 className={styles.inputField}
                 InputProps={{
                   startAdornment: (
@@ -76,10 +84,11 @@ export default function Login() {
               <TextField
                 label="Jelszó"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={jelszo}
+                onChange={(e) => setJelszo(e.target.value)}
                 fullWidth
                 required
+                disabled={loading}
                 className={styles.inputField}
                 InputProps={{
                   startAdornment: (
@@ -95,9 +104,10 @@ export default function Login() {
                 variant="contained" 
                 size="large" 
                 fullWidth
+                disabled={loading}
                 className={styles.loginButton}
               >
-                Bejelentkezés
+                {loading ? "Bejelentkezés..." : "Bejelentkezés"}
               </Button>
 
               <Typography variant="caption" align="center" sx={{ color: 'text.disabled', mt: 2 }}>

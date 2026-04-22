@@ -1,4 +1,3 @@
-/* Megjelenési animáció - marad a feszes 0.3s */
 .container {
     animation: fadeIn 0.3s ease-out;
     background-color: #ffffff;
@@ -9,38 +8,33 @@
     to { opacity: 1; }
 }
 
-/* Kártya stílusa - Keret és árnyék nélkül, tiszta fehér */
 .formPaper {
-    border-radius: 0 !important; /* Teljesen szögletes */
+    border-radius: 0 !important; 
     box-shadow: none !important;
-    border: none !important; /* Keret eltávolítva */
+    border: none !important; 
     background-color: #ffffff !important;
     padding: 0 !important;
 }
 
-/* Input mezők - Csak egy finom alsó vonal vagy tiszta kitöltés */
 .textField :global(.MuiOutlinedInput-root) {
     border-radius: 0px; 
-    background-color: #f1f5f9; /* Halvány szürke kitöltés a keret helyett */
+    background-color: #f1f5f9; 
     transition: background-color 0.2s ease;
 }
 
 .textField :global(.MuiOutlinedInput-notchedOutline) {
-    border: none !important; /* Eltüntetjük a gyári keretet */
+    border: none !important; 
 }
 
-/* Hover és Fókusz állapotok kitöltéssel jelezve */
 .textField :global(.MuiOutlinedInput-root:hover) {
     background-color: #e2e8f0;
 }
 
 .textField :global(.Mui-focused) {
     background-color: #f8fafc !important;
-    /* Csak egy hangsúlyos alsó vonal fókuszban */
     box-shadow: inset 0 -2px 0px #0f172a; 
 }
 
-/* Mentés gomb - Marad a brutális fekete, de keret nélkül */
 .saveButton {
     border-radius: 0 !important;
     text-transform: uppercase !important;
@@ -55,11 +49,9 @@
 
 .saveButton:hover {
     background-color: #000000 !important;
-    /* Minimális eltolás, hogy érezhető legyen a kattintás */
     transform: translateY(-1px);
 }
 
-/* Mégse gomb - Csak szöveg, semmi sallang */
 .cancelButton {
     border-radius: 0 !important;
     text-transform: uppercase !important;
@@ -75,7 +67,6 @@
     background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
-/* Labelek - Szigorú és tiszta */
 .textField :global(.MuiInputLabel-root) {
     font-weight: 800;
     color: #0f172a;
@@ -84,7 +75,6 @@
     letter-spacing: 1px;
 }
 
-/* Szekció elválasztó (ha van) */
 .divider {
     height: 1px;
     background-color: #f1f5f9;

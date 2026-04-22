@@ -1,4 +1,3 @@
-/* Megjelenési animáció - Feszes, nincs úszkálás */
 .container {
     animation: fadeIn 0.2s ease-in;
 }
@@ -8,7 +7,6 @@
     to { opacity: 1; }
 }
 
-/* Kártya stílusa - Nulla kerekítés, vékony fekete keret */
 .paper {
     border-radius: 0 !important;
     box-shadow: none !important;
@@ -17,29 +15,26 @@
     overflow: hidden;
 }
 
-/* Eszköz információs blokk - A gradiens helyett tiszta szürke */
 .eszkozInfo {
     background: #f8fafc !important;
     border-radius: 0;
     border: none;
-    /* Csak egy vékony alsó vonal választja el */
     border-bottom: 1px solid #e2e8f0;
     padding: 24px !important;
     transition: none;
 }
 
 .eszkozInfo:hover {
-    transform: none; /* Nincs mozgás, ez egy statikus űrlap */
+    transform: none;
     background-color: #f1f5f9 !important;
 }
 
-/* Input mezők - Szögletes és tiszta */
 .textField {
     background-color: #ffffff;
 }
 
 .textField :global(.MuiOutlinedInput-root) {
-    border-radius: 0; /* Teljesen szögletes */
+    border-radius: 0; 
     transition: none;
 }
 
@@ -49,13 +44,12 @@
 
 .textField :global(.Mui-focused .MuiOutlinedInput-notchedOutline) {
     border-color: #000000 !important;
-    border-width: 1px !important; /* Maradjon vékony a vonal */
+    border-width: 1px !important; 
 }
 
-/* Gombok - Brutális fekete blokk */
 .submitButton {
     border-radius: 0 !important;
-    text-transform: uppercase !important; /* Nagybetű = komolyság */
+    text-transform: uppercase !important; 
     font-weight: 700 !important;
     font-size: 0.75rem !important;
     letter-spacing: 2px !important;
@@ -69,7 +63,6 @@
     background-color: #334155 !important;
 }
 
-/* Mégse gomb - Csak szöveg */
 .cancelButton {
     color: #64748b !important;
     text-transform: uppercase !important;

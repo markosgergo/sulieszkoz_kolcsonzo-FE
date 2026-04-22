@@ -2,14 +2,12 @@ import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { 
-  IconButton, Avatar, Menu, MenuItem, ListItemIcon, Divider, Typography, Box 
+  IconButton, Avatar, Menu, MenuItem, ListItemIcon, Divider, Typography
 } from "@mui/material";
 import Logout from "@mui/icons-material/Logout";
 import HistoryIcon from "@mui/icons-material/History";
 import PersonIcon from "@mui/icons-material/Person";
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-
-// Importáljuk a CSS modult
 import styles from "./AccountMenu.module.css";
 
 export default function AccountMenu() {
@@ -21,10 +19,13 @@ export default function AccountMenu() {
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    handleClose();
+    await logout();
     navigate("/login");
   };
+
+  const isAdmin = user?.szerepkorNev === "ADMIN";
 
   return (
     <>
@@ -34,9 +35,14 @@ export default function AccountMenu() {
         className={styles.avatarButton}
       >
         <Avatar 
-          sx={{ width: 36, height: 36, bgcolor: "#2563eb", fontWeight: 700 }}
+          sx={{
+            width: 36,
+            height: 36,
+            bgcolor: isAdmin ? "#dc2626" : "#2563eb",
+            fontWeight: 700
+          }}
         >
-          {user?.nev?.charAt(0) || "U"}
+          {user?.nev?.charAt(0)?.toUpperCase() || "U"}
         </Avatar>
       </IconButton>
       
@@ -47,19 +53,18 @@ export default function AccountMenu() {
         onClick={handleClose}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        // Itt adjuk át a stílust a lebegő menünek
         PaperProps={{
           className: styles.menuPaper,
           elevation: 0
         }}
       >
         <div className={styles.userInfo}>
-            <Typography className={styles.userName}>
-                {user?.nev}
-            </Typography>
-            <Typography className={styles.userEmail}>
-                {user?.email}
-            </Typography>
+          <Typography className={styles.userName}>
+            {user?.nev}
+          </Typography>
+          <Typography className={styles.userEmail}>
+            {user?.email}
+          </Typography>
         </div>
 
         <MenuItem onClick={() => navigate("/profil")} className={styles.menuItem}>
@@ -72,9 +77,11 @@ export default function AccountMenu() {
           Kölcsönzéseim
         </MenuItem>
 
-        {user?.szerepkorNev === 'ADMIN' && (
-          <MenuItem onClick={() => navigate("/admin/kolcsonzesek")} className={`${styles.menuItem} styles.adminItem`}>
-            <ListItemIcon><AdminPanelSettingsIcon fontSize="small" sx={{ color: '#16a34a' }} /></ListItemIcon>
+        {isAdmin && (
+          <MenuItem onClick={() => navigate("/admin/kolcsonzesek")} className={styles.menuItem}>
+            <ListItemIcon>
+              <AdminPanelSettingsIcon fontSize="small" sx={{ color: '#16a34a' }} />
+            </ListItemIcon>
             Adminisztráció
           </MenuItem>
         )}

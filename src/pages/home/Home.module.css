@@ -1,4 +1,3 @@
-/* Fő konténer - Tiszta fehér, semmi maszatolás */
 .mainContainer {
     animation: fadeIn 0.3s ease-in;
     background-color: #ffffff; 
@@ -10,21 +9,19 @@
     to { opacity: 1; }
 }
 
-/* Statisztikai kártyák - Minimális kerekítés, vékony fekete keret */
 .statPaper {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    border: 1px solid #e5e7eb !important; /* Világosszürke vonal */
+    border: 1px solid #e5e7eb !important; 
     background: #ffffff !important;
-    border-radius: 4px !important; /* Majdnem szögletes */
+    border-radius: 4px !important; 
     box-shadow: none !important;
 }
 
 .statPaper:hover {
-    border-color: #000000 !important; /* Hoverre befeketedik a széle */
+    border-color: #000000 !important; 
     transform: translateY(-2px);
 }
 
-/* Feature kártyák - Ultra minimalista */
 .featureCard {
     background: #fafafa !important;
     border-radius: 4px !important;
@@ -33,17 +30,17 @@
 
 .featureCard:hover {
     background: #ffffff !important;
-    border-color: #000000 !important;
+    scale: 1.02;
+    transition: 0.2s;
 }
 
-/* Gombok - Brutálisan komoly: tiszta fekete */
 .actionButton {
-    text-transform: uppercase !important; /* Ettől lesz "ipari" hatása */
+    text-transform: uppercase !important; 
     font-size: 0.75rem !important;
     font-weight: 800 !important;
     letter-spacing: 1px !important;
     border-radius: 2px !important;
-    background-color: #000000 !important; /* Tiszta fekete */
+    background-color: #000000 !important; 
     color: #ffffff !important;
     padding: 12px 24px !important;
     transition: all 0.2s !important;
@@ -51,19 +48,17 @@
 
 .actionButton:hover {
     background-color: #333333 !important;
-    box-shadow: 4px 4px 0px #e5e7eb !important; /* Kemény árnyék */
+    box-shadow: 4px 4px 0px #e5e7eb !important; 
 }
 
-/* Felhasználói üdvözlő kártya - Nem kék, hanem "Deep Slate" */
 .userMainCard {
-    background: #111827 !important; /* Szinte fekete szürke */
+    background: #111827 !important;
     border-radius: 4px !important;
     color: #ffffff !important;
     padding: 32px !important;
     border: 1px solid #000000 !important;
 }
 
-/* A dekoratív elem helyett egy technikai vonal */
 .userMainCard::after {
     content: "";
     position: absolute;
@@ -71,10 +66,9 @@
     left: 0;
     width: 100%;
     height: 4px;
-    background: #3b82f6; /* Egyetlen vékony kék csík az alján, hogy ne legyen halott */
+    background: #3b82f6; 
 }
 
-/* Dashed Box - Technikai rajz stílus */
 .dashedBox {
     border: 1px dashed #000000 !important;
     border-radius: 2px !important;
@@ -88,10 +82,9 @@
     background-color: #fafafa !important;
 }
 
-/* Statisztikai értékek - Vastag és fekete */
 .statValue {
     color: #000000;
     font-weight: 900;
     font-size: 2rem;
-    font-family: 'Inter', monospace !important; /* Monospace a technikai hatáshoz */
+    font-family: 'Inter', monospace !important; 
 }

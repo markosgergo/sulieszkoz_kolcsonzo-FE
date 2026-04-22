@@ -1,4 +1,3 @@
-/* Belépő animáció - Minimális, csak egy finom áttűnés */
 .container {
     animation: fadeIn 0.2s ease-in;
     background-color: #ffffff;
@@ -9,21 +8,19 @@
     to { opacity: 1; }
 }
 
-/* Táblázat konténer - Nulla kerekítés, vékony keret */
 .tableContainer {
     border-radius: 0 !important; 
     box-shadow: none !important;
-    border: 1px solid #000000 !important; /* Határozott fekete keret */
+    border: 1px solid #000000 !important; 
     background: #ffffff !important;
 }
 
-/* Fejléc stílusa - Sötét blokk a kontraszt kedvéért */
 .tableHead {
-    background-color: #0f172a !important; /* A Navbar mélyszürke/fekete színe */
+    background-color: #0f172a !important;
 }
 
 .headerCell {
-    color: #ffffff !important; /* Fehér szöveg a sötét fejen */
+    color: #ffffff !important;
     font-weight: 800 !important;
     text-transform: uppercase;
     font-size: 0.7rem !important;
@@ -32,21 +29,19 @@
     border-bottom: 1px solid #000000 !important;
 }
 
-/* Sorok stílusa - Tiszta elválasztás */
 .tableRow {
     transition: background-color 0.1s ease;
     border-bottom: 1px solid #f1f5f9;
 }
 
 .tableRow:hover {
-    background-color: #f8fafc !important; /* Nagyon halvány szürke hover */
+    background-color: #f8fafc !important;
 }
 
 .tableRow:last-child {
     border-bottom: none;
 }
 
-/* ID oszlop - Precíziós adat */
 .idCell {
     font-family: 'JetBrains Mono', 'Fira Code', monospace;
     color: #64748b;
@@ -54,19 +49,17 @@
     font-weight: 500;
 }
 
-/* Akció gombok - Nincs scale és animáció, csak tiszta funkció */
 .deleteButton {
-    color: #e11d48 !important; /* Komolyabb vörös */
+    color: #e11d48 !important;
     transition: opacity 0.2s ease !important;
 }
 
 .deleteButton:hover {
     background-color: transparent !important;
     opacity: 0.6;
-    transform: none !important; /* Törölve a játékos ugrálás */
+    transform: none !important; 
 }
 
-/* Vissza gomb - Szögletes és funkcionális */
 .backButton {
     border-radius: 0 !important;
     text-transform: uppercase !important;
@@ -83,7 +76,6 @@
     color: #ffffff !important;
 }
 
-/* Cella tartalom finomítása */
 .cellText {
     color: #0f172a;
     font-weight: 600;

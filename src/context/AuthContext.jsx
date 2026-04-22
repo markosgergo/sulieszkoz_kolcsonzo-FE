@@ -7,17 +7,12 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Oldalbetöltéskor ellenőrizzük van-e érvényes JWT cookie
   const checkAuth = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setLoading(false);
-      return;
-    }
     try {
       const data = await ApiService.getMe();
       setUser(data);
-    } catch (error) {
-      localStorage.removeItem("token");
+    } catch {
       setUser(null);
     } finally {
       setLoading(false);
@@ -29,32 +24,22 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, jelszo) => {
-    // 1. Bejelentkezés
-    const response = await ApiService.login(email, jelszo);
-    
-    // 2. Token mentése (ApiService-től függően response.token vagy response.data.token)
-    const token = response.token || response.data?.token;
-    localStorage.setItem("token", token); 
-    
-    // 3. Friss adatok lekérése a "me" végpontról, hogy ugyanaz legyen az állapot, mint F5 után
+    await ApiService.login(email, jelszo);
+    const userData = await ApiService.getMe();
+    setUser(userData);
+    return userData;
+  };
+
+  const logout = async () => {
     try {
-      const userData = await ApiService.getMe();
-      setUser(userData); // Ez frissíti a Navbart azonnal!
-      return userData;
-    } catch (error) {
-      // Ha a getMe hibaágra futna, állítsuk be a response-ból az adatokat
-      setUser(response);
-      return response;
+      await ApiService.logout();
+    } finally {
+      setUser(null);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-  };
-
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, loading, login, logout }}>
       {!loading && children}
     </AuthContext.Provider>
   );

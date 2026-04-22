@@ -1,25 +1,21 @@
-/* Konténer - tiszta, világos alap */
 .container {
     padding: 60px 20px;
     background-color: #ffffff;
 }
 
-/* Kártya - vékony, határozott keret, semmi árnyék */
 .profilePaper {
     border-radius: 0 !important;
-    border: 1px solid #000000 !important; /* Tiszta fekete vékony vonal */
+    border: 1px solid #000000 !important;
     box-shadow: none !important;
     background: #ffffff !important;
 }
 
-/* Fejléc - csak egy tiszta szürke blokk */
 .headerDecoration {
     background-color: #f1f5f9 !important;
     height: 80px;
     border-bottom: 1px solid #000000;
 }
 
-/* Avatar - szögletes, keretben */
 .avatar {
     width: 100px !important;
     height: 100px !important;
@@ -30,7 +26,6 @@
     background-color: #000000 !important;
 }
 
-/* Adat sorok - tiszta elválasztás */
 .infoRow {
     padding: 20px 24px;
     border-bottom: 1px solid #f1f5f9;
@@ -43,10 +38,9 @@
     border-bottom: none;
 }
 
-/* Szövegek - itt dől el a komolyság */
 .label {
     font-size: 0.7rem;
-    font-weight: 400; /* Nem kell vastag, a vékonyság elegáns */
+    font-weight: 400;
     text-transform: uppercase;
     color: #64748b;
     letter-spacing: 1px;
@@ -58,7 +52,6 @@
     color: #000000;
 }
 
-/* Gomb - tiszta fekete tömb */
 .actionButton {
     border-radius: 0 !important;
     text-transform: uppercase !important;
@@ -75,4 +68,29 @@
 .actionButton:hover {
     background-color: #334155 !important;
     cursor: pointer;
+}
+
+.passwordDialog :global(.MuiPaper-root) {
+    border-radius: 0 !important;
+    border: 1px solid #000;
+}
+
+.passwordDialog :global(.MuiOutlinedInput-root) {
+    border-radius: 0;
+}
+
+.roleChip {
+    font-weight: 700 !important;
+    border-radius: 0 !important; /* Szögletesre állítva az egységességért */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.infoRow {
+    padding: 12px;
+    transition: background-color 0.2s ease;
+}
+
+.infoRow:hover {
+    background-color: #f8fafc;
 }

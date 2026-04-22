@@ -6,11 +6,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
 import ApiService from "../../services/ApiService";
-
-// --- CSS MODUL IMPORTÁLÁSA ---
 import styles from "./Home.module.css";
-
-// Ikonok
 import LoginIcon from '@mui/icons-material/Login';
 import LaptopMacIcon from '@mui/icons-material/LaptopMac';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
@@ -20,7 +16,6 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import GroupIcon from '@mui/icons-material/Group';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 
-// --- 1. VENDÉG NÉZET (Landing Page) ---
 const PublicLanding = () => (
   <Box sx={{ textAlign: 'center', py: { xs: 6, md: 10 } }}>
     <Typography variant="h2" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main', fontSize: { xs: '2.5rem', md: '3.75rem' } }}>
@@ -38,7 +33,7 @@ const PublicLanding = () => (
         component={Link} 
         to="/login" 
         startIcon={<LoginIcon />} 
-        className={styles.actionButton} // CLASS HOZZÁADVA
+        className={styles.actionButton}
         sx={{ px: 4, py: 1.5, borderRadius: 3 }}
       >
         Bejelentkezés
@@ -49,7 +44,7 @@ const PublicLanding = () => (
         component={Link} 
         to="/regisztracio" 
         startIcon={<AppRegistrationIcon />} 
-        className={styles.actionButton} // CLASS HOZZÁADVA
+        className={styles.actionButton}
         sx={{ px: 4, py: 1.5, borderRadius: 3 }}
       >
         Regisztráció
@@ -65,7 +60,7 @@ const PublicLanding = () => (
         <Grid item xs={12} sm={6} md={4} key={index}>
           <Paper 
             elevation={0} 
-            className={styles.featureCard} // CLASS HOZZÁADVA
+            className={styles.featureCard}
             sx={{ 
               p: 4, 
               bgcolor: 'rgba(25, 118, 210, 0.04)', 
@@ -87,14 +82,13 @@ const PublicLanding = () => (
   </Box>
 );
 
-// --- 2. DIÁK DASHBOARD (User) ---
 const UserDashboard = () => {
   const [activeCount, setActiveCount] = useState(0);
 
   useEffect(() => {
     ApiService.getSajatKolcsonzesek()
       .then(data => {
-        const active = data.filter(k => k.visszavetelDatuma === null).length;
+        const active = data.filter(k => !k.visszavetelDatuma).length;
         setActiveCount(active);
       })
       .catch(err => console.error("Hiba:", err));
@@ -107,7 +101,7 @@ const UserDashboard = () => {
       <Grid container spacing={3} sx={{ mb: 6 }}>
         <Grid item xs={12} md={7}>
           <Card 
-            className={styles.userMainCard} // CLASS HOZZÁADVA
+            className={styles.userMainCard}
             sx={{ color: 'white', borderRadius: 4, height: '100%', boxShadow: 4 }}
           >
             <CardContent sx={{ p: 4 }}>
@@ -122,7 +116,7 @@ const UserDashboard = () => {
                 variant="contained" 
                 component={Link} 
                 to="/sajat-kolcsonzesek" 
-                className={styles.actionButton} // CLASS HOZZÁADVA
+                className={styles.actionButton}
                 sx={{ bgcolor: 'white', color: 'primary.main', fontWeight: 'bold', '&:hover': { bgcolor: '#f5f5f5' } }}
               >
                 Részletek megtekintése
@@ -133,7 +127,7 @@ const UserDashboard = () => {
         
         <Grid item xs={12} md={5}>
           <Paper 
-            className={styles.dashedBox} // CLASS HOZZÁADVA
+            className={styles.dashedBox}
             sx={{ p: 4, borderRadius: 4, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', bgcolor: 'grey.50', border: '1px dashed #ccc' }}
           >
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>Új kölcsönzés indítása</Typography>
@@ -150,7 +144,6 @@ const UserDashboard = () => {
   );
 };
 
-// --- 3. ADMIN DASHBOARD ---
 const AdminDashboard = () => {
   const [stats, setStats] = useState({ osszes: 0, kint: 0, kesesben: 0, felhasznalok: 0 });
   const [loading, setLoading] = useState(true);
@@ -169,8 +162,8 @@ const AdminDashboard = () => {
 
         setStats({
           osszes: eszkozok.length,
-          kint: kolcsonzesek.filter(k => k.visszavetelDatuma === null).length,
-          kesesben: kolcsonzesek.filter(k => k.visszavetelDatuma === null && new Date(k.hatarido) < ma).length,
+          kint: kolcsonzesek.filter(k => !k.visszavetelDatuma).length,
+          kesesben: kolcsonzesek.filter(k => !k.visszavetelDatuma && new Date(k.hatarido) < ma).length,
           felhasznalok: felhasznalok.length
         });
       } catch (err) {
@@ -241,7 +234,6 @@ const AdminDashboard = () => {
   );
 };
 
-// --- A FŐ KOMPONENS ---
 export default function Home() {
   const { user } = useAuth();
 
@@ -249,7 +241,7 @@ export default function Home() {
     <Container 
         maxWidth="lg" 
         sx={{ minHeight: '80vh' }} 
-        className={styles.mainContainer} // CLASS HOZZÁADVA
+        className={styles.mainContainer}
     >
       {!user ? (
         <PublicLanding />

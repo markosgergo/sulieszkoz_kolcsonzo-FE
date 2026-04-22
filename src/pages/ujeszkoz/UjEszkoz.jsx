@@ -19,8 +19,6 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import InventoryIcon from '@mui/icons-material/Inventory';
 import CategoryIcon from '@mui/icons-material/Category';
 import QrCodeIcon from '@mui/icons-material/QrCode';
-
-// CSS Modul import
 import styles from "./UjEszkoz.module.css";
 
 export default function UjEszkoz() {

@@ -1,4 +1,3 @@
-/* Belépő animáció - Csak egy villanás, tiszta fókusz */
 .container {
     animation: fadeIn 0.2s ease-in;
     background-color: #ffffff;
@@ -9,7 +8,6 @@
     to { opacity: 1; }
 }
 
-/* Táblázat konténer - Nulla kerekítés, vékony fekete keret */
 .tableContainer {
     border-radius: 0 !important;
     box-shadow: none !important;
@@ -17,9 +15,8 @@
     background: #ffffff !important;
 }
 
-/* Fejléc - Sötét és határozott */
 .tableHead {
-    background-color: #0f172a !important; /* A Navbar mély tónusa */
+    background-color: #0f172a !important;
 }
 
 .headerCell {
@@ -31,7 +28,6 @@
     padding: 16px !important;
 }
 
-/* Sorok - Tiszta rácsos elrendezés */
 .tableRow {
     transition: background-color 0.1s ease;
     border-bottom: 1px solid #f1f5f9;
@@ -41,14 +37,12 @@
     background-color: #f8fafc !important;
 }
 
-/* Visszahozott tételek - Grayscale minimalizmus */
 .returnedRow {
     background-color: #ffffff !important;
     opacity: 0.4;
     filter: grayscale(1);
 }
 
-/* Gombok - Fekete blokk stílus */
 .actionButton {
     border-radius: 0 !important;
     text-transform: uppercase !important;
@@ -60,22 +54,19 @@
     padding: 10px 20px !important;
 }
 
-/* Szkennelő ablak (Dialog) - Mint egy mérnöki tervrajz doboza */
 .scannerDialog {
-    border-radius: 0 !important; /* Nulla kerekítés */
+    border-radius: 0 !important;
     border: 2px solid #000000 !important;
 }
 
-/* Kamera keret - Technikai, éles */
 .scannerFrame {
-    border-radius: 0; /* Nincs kerekített sarok a kamerán sem */
+    border-radius: 0; 
     overflow: hidden;
     border: 1px solid #000000;
     margin-top: 16px;
-    background-color: #000000; /* A kamera betöltéséig legyen fekete */
+    background-color: #000000; 
 }
 
-/* Kiegészítő feliratok */
 .helperText {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.7rem;

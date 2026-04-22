@@ -6,11 +6,7 @@ import {
   Container, Paper, Typography, TextField, Button, Stack, 
   Alert, Box, CircularProgress, MenuItem 
 } from "@mui/material";
-
-// CSS Modul import
 import styles from "./Kolcsonzes.module.css";
-
-// Ikonok a vizualitáshoz
 import DevicesIcon from '@mui/icons-material/Devices';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 

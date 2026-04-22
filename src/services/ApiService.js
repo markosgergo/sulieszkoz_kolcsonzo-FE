@@ -1,57 +1,33 @@
 import axios from "axios";
 
-// Axios példány létrehozása alapbeállításokkal
 const api = axios.create({
   baseURL: "http://localhost:8080/api",
   withCredentials: true,
 });
 
-/**
- * REQUEST INTERCEPTOR: Automatikusan hozzáadja a JWT tokent minden kéréshez
- */
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-/**
- * RESPONSE INTERCEPTOR: Kezeli a lejárt munkamenetet (401 hiba)
- */
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+    if (error.response?.status === 401) {
+      const url = error.config?.url || "";
+      if (!url.includes("/auth/me") && !url.includes("/auth/login")) {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }
 );
 
 const ApiService = {
-  // --- AUTHENTICATION (Hitelesítés) ---
+
   login: async (email, jelszo) => {
     const response = await api.post("/auth/login", { email, jelszo });
     return response.data;
   },
 
-  register: async (felhasznaloAdat) => {
-    const response = await api.post("/felhasznalok", felhasznaloAdat);
-    return response.data;
-  },
-
   logout: async () => {
-    try {
-      await api.post("/auth/logout");
-    } finally {
-      localStorage.removeItem("token");
-    }
+    const response = await api.post("/auth/logout");
+    return response.data;
   },
 
   getMe: async () => {
@@ -59,7 +35,42 @@ const ApiService = {
     return response.data;
   },
 
-  // --- ESZKOZOK (Eszközök kezelése) ---
+
+  register: async (felhasznaloAdat) => {
+    const response = await api.post("/felhasznalok", felhasznaloAdat);
+    return response.data;
+  },
+
+  getAllFelhasznalo: async () => {
+    const response = await api.get("/felhasznalok");
+    return response.data;
+  },
+
+  getFelhasznaloById: async (id) => {
+    const response = await api.get(`/felhasznalok/${id}`);
+    return response.data;
+  },
+
+  keresesNevAlapjan: async (nev) => {
+    const response = await api.get("/felhasznalok/kereses", { params: { nev } });
+    return response.data;
+  },
+
+  deleteFelhasznalo: async (id) => {
+    const response = await api.delete(`/felhasznalok/${id}`);
+    return response.data;
+  },
+
+  modositJelszo: async (id, jelszoAdatok) => {
+    const response = await api.put(`/felhasznalok/${id}/jelszo`, jelszoAdatok);
+    return response.data;
+  },
+
+  modositSzerepkor: async (id, ujSzerepkor) => {
+    const response = await api.put(`/felhasznalok/${id}/szerepkor`, { ujSzerepkor });
+    return response.data; 
+  },
+
   getAllEszkoz: async () => {
     const response = await api.get("/eszkozok");
     return response.data;
@@ -90,34 +101,13 @@ const ApiService = {
     return response.data;
   },
 
-  /**
-   * BIZTONSÁGOS QR KÓD LEKÉRÉS:
-   * Mivel a backend auth-ot kér, bináris adatként (blob) hívjuk le.
-   */
   getEszkozQrCode: async (id) => {
     const response = await api.get(`/eszkozok/${id}/qrcode`, {
-      responseType: 'blob'
+      responseType: "blob",
     });
     return URL.createObjectURL(response.data);
   },
 
-  // --- FELHASZNALOK (Adminisztráció) ---
-  getAllFelhasznalo: async () => {
-    const response = await api.get("/felhasznalok");
-    return response.data;
-  },
-
-  getFelhasznaloById: async (id) => {
-    const response = await api.get(`/felhasznalok/${id}`);
-    return response.data;
-  },
-
-  deleteFelhasznalo: async (id) => {
-    const response = await api.delete(`/felhasznalok/${id}`);
-    return response.data;
-  },
-
-  // --- KOLCSONZESEK (Kölcsönzési folyamat) ---
   getAllKolcsonzes: async () => {
     const response = await api.get("/kolcsonzesek");
     return response.data;
@@ -138,19 +128,15 @@ const ApiService = {
     return response.data;
   },
 
-  // Visszavétel konkrét kölcsönzés ID alapján
   visszavetel: async (id) => {
     const response = await api.put(`/kolcsonzesek/${id}/visszavetel`);
     return response.data;
   },
 
-  // Visszavétel eszköz ID alapján (ha a kezelő nem tudja a kölcsönzés ID-t)
   visszavetelByEszkozId: async (eszkozId) => {
     const response = await api.put(`/kolcsonzesek/visszavetel/eszkoz/${eszkozId}`);
     return response.data;
-  }
+  },
 };
-
-
 
 export default ApiService;

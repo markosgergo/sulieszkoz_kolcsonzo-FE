@@ -1,13 +1,11 @@
-/* Visszaállított világos háttér */
 .pageWrapper {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f1f5f9; /* A letisztult, világos alap */
+    background-color: #f1f5f9; 
 }
 
-/* Belépő animáció */
 .loginContainer {
     animation: fadeIn 0.4s ease-out;
 }
@@ -17,18 +15,16 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* A kártya - Vékony fekete kerettel, árnyék nélkül */
 .loginPaper {
     padding: 56px !important;
-    border-radius: 0 !important; /* Szögletes, ipari jelleg */
+    border-radius: 0 !important; 
     background-color: #ffffff !important;
-    border: 1px solid #000000 !important; /* Határozott fekete keret */
+    border: 1px solid #000000 !important; 
     box-shadow: none !important;
     max-width: 400px;
     width: 100%;
 }
 
-/* Input mezők - Szögletes, tiszta fehér */
 .inputField :global(.MuiOutlinedInput-root) {
     border-radius: 0;
     background-color: #ffffff;
@@ -38,13 +34,11 @@
     border: 1px solid #e2e8f0;
 }
 
-/* Fókusz állapot - Fekete keret */
 .inputField :global(.Mui-focused .MuiOutlinedInput-notchedOutline) {
     border-color: #000000 !important;
     border-width: 1px !important;
 }
 
-/* Belépés gomb - Brutális fekete blokk */
 .loginButton {
     padding: 16px !important;
     border-radius: 0 !important;
@@ -62,7 +56,6 @@
     background-color: #334155 !important;
 }
 
-/* Cím - Vastag és szigorú */
 .loginTitle {
     font-weight: 900 !important;
     text-transform: uppercase;
@@ -72,7 +65,6 @@
     text-align: center;
 }
 
-/* Segédszöveg - Finom szürke */
 .helperText {
     color: #94a3b8;
     font-size: 0.65rem;
