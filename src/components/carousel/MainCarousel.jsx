@@ -3,7 +3,6 @@ import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import { Box, Typography, Button, Container } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-// Swiper stílusok importálása
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';

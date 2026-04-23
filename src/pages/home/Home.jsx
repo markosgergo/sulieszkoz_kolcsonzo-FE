@@ -8,7 +8,6 @@ import { useAuth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import ApiService from "../../services/ApiService";
 
-// Ikonok
 import LoginIcon from '@mui/icons-material/Login';
 import LaptopMacIcon from '@mui/icons-material/LaptopMac';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
@@ -19,7 +18,6 @@ import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 
-// Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
@@ -38,7 +36,6 @@ const modalStyle = {
   p: 4,
 };
 
-// --- CAROUSEL KOMPONENS ---
 const MainCarousel = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -162,7 +159,6 @@ const MainCarousel = () => {
   );
 };
 
-// --- PUBLIKUS LANDING ---
 const PublicLanding = () => (
   <Box sx={{ pb: 8 }}>
     <MainCarousel />
@@ -191,7 +187,6 @@ const PublicLanding = () => (
   </Box>
 );
 
-// --- USER DASHBOARD ---
 const UserDashboard = () => {
   const [activeCount, setActiveCount] = useState(0);
   useEffect(() => {
@@ -224,7 +219,6 @@ const UserDashboard = () => {
   );
 };
 
-// --- ADMIN DASHBOARD ---
 const AdminDashboard = () => {
   const [stats, setStats] = useState({ osszes: 0, kint: 0, kesesben: 0, felhasznalok: 0 });
   const [loading, setLoading] = useState(true);
@@ -272,7 +266,6 @@ const AdminDashboard = () => {
   );
 };
 
-// --- MAIN HOME COMPONENT ---
 export default function Home() {
   const { user } = useAuth();
   return (
