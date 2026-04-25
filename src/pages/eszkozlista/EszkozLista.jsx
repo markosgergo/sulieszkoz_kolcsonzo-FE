@@ -19,7 +19,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
 
-function Row({ eszkoz, isAdmin, user, navigate, handleDelete, handleOpenQr, onRefresh }) {
+function Row({ eszkoz, isAdmin, isStaff, user, navigate, handleDelete, handleOpenQr, onRefresh }) {
   const [open, setOpen] = useState(false);
 
   const handleVisszavetel = async () => {
@@ -84,7 +84,7 @@ function Row({ eszkoz, isAdmin, user, navigate, handleDelete, handleOpenQr, onRe
         </TableCell>
         <TableCell align="center">
           <Stack direction="row" spacing={1} justifyContent="center">
-            {isAdmin && (
+            {isStaff && (
               <>
                 {eszkoz.elerheto ? (
                   <IconButton color="info" onClick={() => navigate(`/kolcsonzes/${eszkoz.id}`)} title="Kiadás">
@@ -98,7 +98,7 @@ function Row({ eszkoz, isAdmin, user, navigate, handleDelete, handleOpenQr, onRe
               </>
             )}
 
-            {!isAdmin && eszkoz.elerheto && (
+            {!isStaff && eszkoz.elerheto && (
               <Button 
                 variant="contained" 
                 size="small" 
@@ -164,6 +164,7 @@ export default function EszkozLista() {
   const [qrLoading, setQrLoading] = useState(false);
 
   const isAdmin = user?.szerepkorNev === "ADMIN" || user?.role === "ADMIN";
+  const isStaff = isAdmin || user?.szerepkorNev === "ALKALMAZOTT";
 
   useEffect(() => { fetchData(); }, []);
 
@@ -284,7 +285,8 @@ export default function EszkozLista() {
               <Row 
                 key={eszkoz.id} 
                 eszkoz={eszkoz} 
-                isAdmin={isAdmin} 
+                isAdmin={isAdmin}
+                isStaff={isStaff}
                 user={user} 
                 navigate={navigate} 
                 handleDelete={handleDelete} 
