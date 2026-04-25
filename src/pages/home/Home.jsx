@@ -207,21 +207,40 @@ const UserDashboard = () => {
 };
 
 const AdminDashboard = () => {
+  const { user } = useAuth();
+  const isAdmin = user?.szerepkorNev === 'ADMIN';
   const [stats, setStats] = useState({ osszes: 0, kint: 0, kesesben: 0, felhasznalok: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [e, k, f] = await Promise.all([ApiService.getAllEszkoz(), ApiService.getAllKolcsonzes(), ApiService.getAllFelhasznalo()]);
+        const requests = [ApiService.getAllEszkoz(), ApiService.getAllKolcsonzes()];
+        if (isAdmin) requests.push(ApiService.getAllFelhasznalo());
+        const results = await Promise.all(requests);
+        const [e, k] = results;
+        const f = isAdmin ? results[2] : [];
         const ma = new Date(); ma.setHours(0,0,0,0);
         setStats({ osszes: e.length, kint: k.filter(x => !x.visszavetelDatuma).length, kesesben: k.filter(x => !x.visszavetelDatuma && new Date(x.hatarido) < ma).length, felhasznalok: f.length });
       } catch (e) { console.error(e); } finally { setLoading(false); }
     };
     fetchStats();
-  }, []);
+  }, [isAdmin]);
 
   if (loading) return <Box sx={{ textAlign: 'center', mt: 10 }}><CircularProgress /></Box>;
+
+  const statCards = isAdmin
+    ? [
+        { l: "Összes eszköz", v: stats.osszes, c: "#3b82f6" },
+        { l: "Regisztráltak", v: stats.felhasznalok, c: "#10b981" },
+        { l: "Kölcsönözve", v: stats.kint, c: "#f59e0b" },
+        { l: "Késésben", v: stats.kesesben, c: "#ef4444" }
+      ]
+    : [
+        { l: "Összes eszköz", v: stats.osszes, c: "#3b82f6" },
+        { l: "Kölcsönözve", v: stats.kint, c: "#f59e0b" },
+        { l: "Késésben", v: stats.kesesben, c: "#ef4444" }
+      ];
 
   return (
     <Box>
@@ -230,13 +249,8 @@ const AdminDashboard = () => {
         <Typography variant="h4" fontWeight="800">Kezelői Vezérlőpult</Typography>
       </Stack>
       <Grid container spacing={3} sx={{ mb: 6 }}>
-        {[
-          { l: "Összes eszköz", v: stats.osszes, c: "#3b82f6" },
-          { l: "Regisztráltak", v: stats.felhasznalok, c: "#10b981" },
-          { l: "Kölcsönözve", v: stats.kint, c: "#f59e0b" },
-          { l: "Késésben", v: stats.kesesben, c: "#ef4444" }
-        ].map((s, i) => (
-          <Grid item xs={6} md={3} key={i}>
+        {statCards.map((s, i) => (
+          <Grid item xs={6} md={isAdmin ? 3 : 4} key={i}>
             <Paper className={styles.statPaper} sx={{ borderBottom: `5px solid ${s.c}` }}>
               <Typography variant="caption" fontWeight="800" color="text.secondary">{s.l}</Typography>
               <Typography variant="h4" fontWeight="900" sx={{ color: s.c }}>{s.v}</Typography>
@@ -246,8 +260,12 @@ const AdminDashboard = () => {
       </Grid>
       <Stack direction="row" spacing={2}>
         <Button variant="contained" component={Link} to="/admin/kolcsonzesek" startIcon={<QrCodeScannerIcon />}>QR Kezelés</Button>
-        <Button variant="outlined" component={Link} to="/eszkozok/uj" startIcon={<AddCircleOutlineIcon />}>Új eszköz</Button>
-        <Button variant="outlined" color="success" component={Link} to="/admin/felhasznalok" startIcon={<GroupIcon />}>Tagok</Button>
+        {isAdmin && (
+          <>
+            <Button variant="outlined" component={Link} to="/eszkozok/uj" startIcon={<AddCircleOutlineIcon />}>Új eszköz</Button>
+            <Button variant="outlined" color="success" component={Link} to="/admin/felhasznalok" startIcon={<GroupIcon />}>Tagok</Button>
+          </>
+        )}
       </Stack>
     </Box>
   );

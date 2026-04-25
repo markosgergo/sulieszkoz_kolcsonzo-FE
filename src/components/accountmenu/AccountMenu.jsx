@@ -26,6 +26,7 @@ export default function AccountMenu() {
   };
 
   const isAdmin = user?.szerepkorNev === "ADMIN";
+  const isStaff = isAdmin || user?.szerepkorNev === "ALKALMAZOTT";
 
   return (
     <>
@@ -38,7 +39,7 @@ export default function AccountMenu() {
           sx={{
             width: 36,
             height: 36,
-            bgcolor: isAdmin ? "#dc2626" : "#2563eb",
+            bgcolor: isAdmin ? "#dc2626" : isStaff ? "#16a34a" : "#2563eb",
             fontWeight: 700
           }}
         >
@@ -77,7 +78,7 @@ export default function AccountMenu() {
           Kölcsönzéseim
         </MenuItem>
 
-        {isAdmin && (
+        {isStaff && (
           <MenuItem onClick={() => navigate("/admin/kolcsonzesek")} className={styles.menuItem}>
             <ListItemIcon>
               <AdminPanelSettingsIcon fontSize="small" sx={{ color: '#16a34a' }} />

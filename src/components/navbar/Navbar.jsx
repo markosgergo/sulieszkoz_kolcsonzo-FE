@@ -40,7 +40,7 @@ export default function Navbar() {
                   Készlet
                 </Button>
                 
-                {(user.szerepkorNev === 'ADMIN' || user.szerepkorNev === 'ALKALMAZOTT') && (
+                {user.szerepkorNev === 'ADMIN' && (
                   <Button 
                     component={Link} 
                     to="/eszkozok/uj" 
