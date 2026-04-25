@@ -79,8 +79,8 @@ export default function AdminKolcsonzesek() {
   );
 
   return (
-    <Container maxWidth="lg" className={styles.container} sx={{ mt: 4, mb: 4 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
+    <Container maxWidth="lg" className={styles.container} sx={{ mt: { xs: 2, md: 4 }, mb: 4, px: { xs: 1, sm: 3 } }}>
+      <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ xs: "flex-start", sm: "center" }} gap={2} sx={{ mb: 4 }}>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1e293b' }}>
             Kölcsönzések kezelése
@@ -113,7 +113,7 @@ export default function AdminKolcsonzesek() {
         </Alert>
       )}
 
-      <TableContainer component={Paper} className={styles.tableContainer}>
+      <TableContainer component={Paper} className={styles.tableContainer} sx={{ overflowX: "auto" }}>
         <Table>
           <TableHead className={styles.tableHead}>
             <TableRow>

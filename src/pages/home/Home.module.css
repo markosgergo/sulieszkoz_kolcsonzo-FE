@@ -195,34 +195,53 @@
 @media (max-width: 900px) {
     .slide {
         padding: 0 40px;
-        height: 480px;
+        height: 440px;
     }
     .slideTitle {
-        font-size: 2.5rem !important;
+        font-size: 2.2rem !important;
+    }
+    .slideDesc {
+        font-size: 1.05rem !important;
     }
 }
 
 @media (max-width: 600px) {
     .mainWrapper {
-        padding: 20px 12px 40px;
+        padding: 16px 8px 40px;
     }
     .carouselContainer {
-        margin-bottom: 40px;
-        border-radius: 20px;
+        margin-bottom: 32px;
+        border-radius: 16px;
     }
     .slide {
-        height: 400px;
-        padding: 0 24px;
+        height: 360px;
+        padding: 0 20px;
         text-align: center;
         justify-content: center;
+        align-items: flex-end;
+        padding-bottom: 48px;
     }
     .slideTitle {
-        font-size: 1.8rem !important;
+        font-size: 1.5rem !important;
+        margin-bottom: 12px !important;
     }
     .slideDesc {
-        font-size: 1rem !important;
+        font-size: 0.9rem !important;
+        margin-bottom: 20px !important;
     }
     .featureCard {
-        padding: 32px 20px;
+        padding: 28px 16px;
+    }
+    .statPaper {
+        padding: 20px 10px;
+    }
+    .sectionTitle {
+        font-size: 1.8rem !important;
+    }
+    .userCard {
+        padding: 24px;
+    }
+    .dashedPaper {
+        padding: 24px;
     }
 }

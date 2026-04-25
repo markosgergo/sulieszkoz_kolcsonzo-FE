@@ -75,8 +75,8 @@ export default function FelhasznaloLista() {
   );
 
   return (
-    <Container maxWidth="md" className={styles.container} sx={{ mt: 6, mb: 6 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
+    <Container maxWidth="md" className={styles.container} sx={{ mt: { xs: 2, md: 6 }, mb: 6, px: { xs: 1, sm: 3 } }}>
+      <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ xs: "flex-start", sm: "center" }} gap={2} sx={{ mb: 4 }}>
         <Box>
           <Stack direction="row" alignItems="center" spacing={2}>
             <GroupIcon sx={{ fontSize: 35, color: '#3b82f6' }} />
@@ -97,7 +97,7 @@ export default function FelhasznaloLista() {
         <Alert severity="error" sx={{ mb: 2 }}>{betoltesHiba}</Alert>
       )}
       
-      <TableContainer component={Paper} className={styles.tableContainer}>
+      <TableContainer component={Paper} className={styles.tableContainer} sx={{ overflowX: "auto" }}>
         <Table>
           <TableHead className={styles.tableHead}>
             <TableRow>

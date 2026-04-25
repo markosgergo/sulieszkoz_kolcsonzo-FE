@@ -43,8 +43,8 @@ export default function SajatKolcsonzesek() {
   );
 
   return (
-    <Container maxWidth="md" className={styles.container} sx={{ mt: 6, mb: 6 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-end" sx={{ mb: 4 }}>
+    <Container maxWidth="md" className={styles.container} sx={{ mt: { xs: 2, md: 6 }, mb: 6, px: { xs: 1, sm: 3 } }}>
+      <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ xs: "flex-start", sm: "flex-end" }} gap={2} sx={{ mb: 4 }}>
         <Box>
           <Stack direction="row" spacing={1} alignItems="center">
             <HistoryIcon color="primary" sx={{ fontSize: 32 }} />
@@ -64,7 +64,7 @@ export default function SajatKolcsonzesek() {
 
       {hiba && <Alert severity="error" variant="filled" sx={{ mb: 3, borderRadius: 2 }}>{hiba}</Alert>}
 
-      <TableContainer component={Paper} className={styles.tablePaper} elevation={0}>
+      <TableContainer component={Paper} className={styles.tablePaper} elevation={0} sx={{ overflowX: "auto" }}>
         <Table>
           <TableHead className={styles.tableHeader}>
             <TableRow>

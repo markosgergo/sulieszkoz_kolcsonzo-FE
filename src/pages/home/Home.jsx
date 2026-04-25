@@ -245,8 +245,8 @@ const AdminDashboard = () => {
   return (
     <Box>
       <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 4 }}>
-        <AdminPanelSettingsIcon color="primary" sx={{ fontSize: 40 }} />
-        <Typography variant="h4" fontWeight="800">Kezelői Vezérlőpult</Typography>
+        <AdminPanelSettingsIcon color="primary" sx={{ fontSize: { xs: 28, md: 40 } }} />
+        <Typography variant="h4" fontWeight="800" sx={{ fontSize: { xs: "1.4rem", md: "2.125rem" } }}>Kezelői Vezérlőpult</Typography>
       </Stack>
       <Grid container spacing={3} sx={{ mb: 6 }}>
         {statCards.map((s, i) => (
@@ -258,12 +258,12 @@ const AdminDashboard = () => {
           </Grid>
         ))}
       </Grid>
-      <Stack direction="row" spacing={2}>
-        <Button variant="contained" component={Link} to="/admin/kolcsonzesek" startIcon={<QrCodeScannerIcon />}>QR Kezelés</Button>
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+        <Button variant="contained" component={Link} to="/admin/kolcsonzesek" startIcon={<QrCodeScannerIcon />} fullWidth>QR Kezelés</Button>
         {isAdmin && (
           <>
-            <Button variant="outlined" component={Link} to="/eszkozok/uj" startIcon={<AddCircleOutlineIcon />}>Új eszköz</Button>
-            <Button variant="outlined" color="success" component={Link} to="/admin/felhasznalok" startIcon={<GroupIcon />}>Tagok</Button>
+            <Button variant="outlined" component={Link} to="/eszkozok/uj" startIcon={<AddCircleOutlineIcon />} fullWidth>Új eszköz</Button>
+            <Button variant="outlined" color="success" component={Link} to="/admin/felhasznalok" startIcon={<GroupIcon />} fullWidth>Tagok</Button>
           </>
         )}
       </Stack>
