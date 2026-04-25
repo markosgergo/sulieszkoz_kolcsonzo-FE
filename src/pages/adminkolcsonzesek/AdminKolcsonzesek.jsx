@@ -56,19 +56,26 @@ export default function AdminKolcsonzesek() {
     return null;
   };
 
-  const handleScanVisszavetel = async (decodedText) => {
-    setShowScanner(false);
-    const eszkozId = parseQrEszkozId(decodedText);
-    if (!eszkozId) {
-      setUzenet({ tipus: "error", szoveg: "Érvénytelen QR kód formátum: " + decodedText });
-      return;
-    }
+  const handleQrScanSuccess = async (decodedText) => {
     try {
-      await ApiService.visszavetelByEszkozId(eszkozId);
-      setUzenet({ tipus: "success", szoveg: "Eszköz visszavéve a QR kód alapján!" });
-      await adatokBetoltese();
-    } catch (err) {
-      setUzenet({ tipus: "error", szoveg: "Hiba: " + (err.response?.data?.hiba || "Sikertelen beolvasás.") });
+      // 1. Kiszedjük a számot az "ESZKOZ_ID:5 | SKU..." szövegből
+      const match = decodedText.match(/ESZKOZ_ID:(\d+)/);
+      
+      if (match && match[1]) {
+        const tisztaEszkozId = parseInt(match[1], 10);
+        
+        // 2. Elküldjük a tiszta ID-t a backendnek
+        await ApiService.visszavetelByEszkozId(tisztaEszkozId);
+        
+        alert(`Sikeres visszavétel! (Eszköz ID: ${tisztaEszkozId})`);
+        
+        // 3. Opcionális: Frissítsd a listát a képernyőn
+        // loadKolcsonzesek(); 
+      } else {
+        alert("Érvénytelen QR kód! Ezt nem a mi rendszerünk generálta.");
+      }
+    } catch (error) {
+      alert("Hiba a visszavétel során: " + (error.response?.data?.hiba || error.message));
     }
   };
 
@@ -194,7 +201,7 @@ export default function AdminKolcsonzesek() {
             Olvasd be az eszköz kódját a gyors visszavételhez!
           </Typography>
           <Box className={styles.scannerFrame}>
-            {showScanner && <QrScanner onScanSuccess={handleScanVisszavetel} />}
+            {showScanner && <QrScanner onScanSuccess={handleQrScanSuccess} />}
           </Box>
         </DialogContent>
       </Dialog>
