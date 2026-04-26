@@ -179,7 +179,10 @@ const PublicLanding = () => (
 const UserDashboard = () => {
   const [activeCount, setActiveCount] = useState(0);
   useEffect(() => {
-    ApiService.getSajatKolcsonzesek().then(data => setActiveCount(data.filter(k => !k.visszavetelDatuma).length)).catch(err => console.error(err));
+    ApiService.getSajatKolcsonzesek()
+      // FIGYELD A FILTER BELSŐ RÉSZÉT:
+      .then(data => setActiveCount(data.filter(k => k.statusz === 'KIKOLCSONOZVE').length))
+      .catch(err => console.error(err));
   }, []);
 
   return (
@@ -221,7 +224,18 @@ const AdminDashboard = () => {
         const [e, k] = results;
         const f = isAdmin ? results[2] : [];
         const ma = new Date(); ma.setHours(0,0,0,0);
-        setStats({ osszes: e.length, kint: k.filter(x => !x.visszavetelDatuma).length, kesesben: k.filter(x => !x.visszavetelDatuma && new Date(x.hatarido) < ma).length, felhasznalok: f.length });
+        
+        setStats({ 
+          osszes: e.length, 
+          
+          kint: k.filter(x => x.statusz === 'KIKOLCSONOZVE').length, 
+          
+          kesesben: k.filter(x => x.statusz === 'KIKOLCSONOZVE' && new Date(x.hatarido) < ma).length, 
+          
+          felhasznalok: f.length 
+        });
+        // ----------------------
+        
       } catch (e) { console.error(e); } finally { setLoading(false); }
     };
     fetchStats();
