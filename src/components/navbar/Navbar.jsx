@@ -36,7 +36,6 @@ export default function Navbar() {
             Suli Eszközkölcsönző
           </Typography>
 
-          {/* Asztali navigáció */}
           <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", gap: 1 }}>
             {navLinks.map((link) => (
               <Button
@@ -63,7 +62,6 @@ export default function Navbar() {
             )}
           </Box>
 
-          {/* Mobil: hamburger + avatar */}
           <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center", gap: 1 }}>
             {user && <AccountMenu />}
             <IconButton onClick={toggleDrawer(true)} sx={{ color: "white" }}>
@@ -73,7 +71,6 @@ export default function Navbar() {
         </Toolbar>
       </Container>
 
-      {/* Mobil drawer */}
       <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
         <Box sx={{ width: 270, height: "100%", bgcolor: "#0f172a", color: "white", display: "flex", flexDirection: "column" }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2 }}>

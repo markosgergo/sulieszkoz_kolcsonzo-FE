@@ -50,7 +50,6 @@ function Row({ eszkoz, isAdmin, isStaff, user, navigate, handleDelete, handleOpe
         const foglalasAdat = {
           felhasznaloId: user.id,
           eszkozId: eszkoz.id,
-          // kiadoId szándékosan nincs megadva – a backend KIADASRA_VAR státuszt ad
           hatarido: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
         };
         await ApiService.createKolcsonzes(foglalasAdat);
@@ -90,7 +89,6 @@ function Row({ eszkoz, isAdmin, isStaff, user, navigate, handleDelete, handleOpe
                     <AssignmentIcon />
                   </IconButton>
                 ) : eszkoz.kiadasraVar ? (
-                  // Kiadásra vár – nem lehet visszavenni, csak jóváhagyni az admin oldalon
                   <IconButton disabled title="Jóváhagyásra vár" sx={{ opacity: 0.35 }}>
                     <AssignmentTurnedInIcon />
                   </IconButton>
@@ -182,7 +180,6 @@ export default function EszkozLista() {
           ? ApiService.getKiadasraVaroKerelmek().catch(() => [])
           : ApiService.getSajatKolcsonzesek().catch(() => []),
       ]);
-      // Minden eszközhöz megkeressük, van-e KIADASRA_VAR státuszú kölcsönzés
       const kiadasraVarEszkozIds = new Set(
         kolcsonzesData
           .filter(k => k.statuszNev === "KIADASRA_VAR")

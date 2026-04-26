@@ -7,7 +7,6 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Oldalbetöltéskor ellenőrizzük van-e érvényes JWT cookie
   const checkAuth = async () => {
     try {
       const data = await ApiService.getMe();

@@ -19,6 +19,11 @@ import GroupIcon from '@mui/icons-material/Group';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import PersonIcon from '@mui/icons-material/Person';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
@@ -176,11 +181,11 @@ const PublicLanding = () => (
     </Box>
   </Box>
 );
+
 const UserDashboard = () => {
   const [activeCount, setActiveCount] = useState(0);
   useEffect(() => {
     ApiService.getSajatKolcsonzesek()
-      // FIGYELD A FILTER BELSŐ RÉSZÉT:
       .then(data => setActiveCount(data.filter(k => k.statusz === 'KIKOLCSONOZVE').length))
       .catch(err => console.error(err));
   }, []);
@@ -212,34 +217,47 @@ const UserDashboard = () => {
 const AdminDashboard = () => {
   const { user } = useAuth();
   const isAdmin = user?.szerepkorNev === 'ADMIN';
-  const [stats, setStats] = useState({ osszes: 0, kint: 0, kesesben: 0, felhasznalok: 0 });
+  const [stats, setStats] = useState({ osszes: 0, kint: 0, kesesben: 0, felhasznalok: 0, varakozok: 0 });
   const [loading, setLoading] = useState(true);
+  const [varakozo, setVarakozo] = useState([]);
+  const [actionLoading, setActionLoading] = useState(null);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const requests = [ApiService.getAllEszkoz(), ApiService.getAllKolcsonzes()];
-        if (isAdmin) requests.push(ApiService.getAllFelhasznalo());
-        const results = await Promise.all(requests);
-        const [e, k] = results;
-        const f = isAdmin ? results[2] : [];
-        const ma = new Date(); ma.setHours(0,0,0,0);
-        
-        setStats({ 
-          osszes: e.length, 
-          
-          kint: k.filter(x => x.statusz === 'KIKOLCSONOZVE').length, 
-          
-          kesesben: k.filter(x => x.statusz === 'KIKOLCSONOZVE' && new Date(x.hatarido) < ma).length, 
-          
-          felhasznalok: f.length 
-        });
-        // ----------------------
-        
-      } catch (e) { console.error(e); } finally { setLoading(false); }
-    };
-    fetchStats();
-  }, [isAdmin]);
+  const fetchAll = async () => {
+    try {
+      const requests = [
+        ApiService.getAllEszkoz(),
+        ApiService.getAllKolcsonzes(),
+        ApiService.getKiadasraVaroKerelmek()
+      ];
+      if (isAdmin) requests.push(ApiService.getAllFelhasznalo());
+      const results = await Promise.all(requests);
+      const [e, k, v] = results;
+      const f = isAdmin ? results[3] : [];
+      const ma = new Date(); ma.setHours(0,0,0,0);
+      setStats({
+        osszes: e.length,
+        kint: k.filter(x => x.statusz === 'KIKOLCSONOZVE').length,
+        kesesben: k.filter(x => x.statusz === 'KIKOLCSONOZVE' && new Date(x.hatarido) < ma).length,
+        felhasznalok: f.length,
+        varakozok: v.length
+      });
+      setVarakozo(v);
+    } catch (e) { console.error(e); } finally { setLoading(false); }
+  };
+
+  useEffect(() => { fetchAll(); }, [isAdmin]);
+
+  const handleElfogad = async (id) => {
+    setActionLoading(id + '_elfogad');
+    try { await ApiService.elfogadKiadasKerelem(id); await fetchAll(); }
+    catch (e) { console.error(e); } finally { setActionLoading(null); }
+  };
+
+  const handleElutasit = async (id) => {
+    setActionLoading(id + '_elutasit');
+    try { await ApiService.elutasitKiadasKerelem(id); await fetchAll(); }
+    catch (e) { console.error(e); } finally { setActionLoading(null); }
+  };
 
   if (loading) return <Box sx={{ textAlign: 'center', mt: 10 }}><CircularProgress /></Box>;
 
@@ -248,12 +266,14 @@ const AdminDashboard = () => {
         { l: "Összes eszköz", v: stats.osszes, c: "#3b82f6" },
         { l: "Regisztráltak", v: stats.felhasznalok, c: "#10b981" },
         { l: "Kölcsönözve", v: stats.kint, c: "#f59e0b" },
-        { l: "Késésben", v: stats.kesesben, c: "#ef4444" }
+        { l: "Késésben", v: stats.kesesben, c: "#ef4444" },
+        { l: "Jóváhagyásra vár", v: stats.varakozok, c: "#8b5cf6" }
       ]
     : [
         { l: "Összes eszköz", v: stats.osszes, c: "#3b82f6" },
         { l: "Kölcsönözve", v: stats.kint, c: "#f59e0b" },
-        { l: "Késésben", v: stats.kesesben, c: "#ef4444" }
+        { l: "Késésben", v: stats.kesesben, c: "#ef4444" },
+        { l: "Jóváhagyásra vár", v: stats.varakozok, c: "#8b5cf6" }
       ];
 
   return (
@@ -262,9 +282,10 @@ const AdminDashboard = () => {
         <AdminPanelSettingsIcon color="primary" sx={{ fontSize: { xs: 28, md: 40 } }} />
         <Typography variant="h4" fontWeight="800" sx={{ fontSize: { xs: "1.4rem", md: "2.125rem" } }}>Kezelői Vezérlőpult</Typography>
       </Stack>
+
       <Grid container spacing={3} sx={{ mb: 6 }}>
         {statCards.map((s, i) => (
-          <Grid item xs={6} md={isAdmin ? 3 : 4} key={i}>
+          <Grid item xs={6} md key={i} sx={{ flexGrow: 1 }}>
             <Paper className={styles.statPaper} sx={{ borderBottom: `5px solid ${s.c}` }}>
               <Typography variant="caption" fontWeight="800" color="text.secondary">{s.l}</Typography>
               <Typography variant="h4" fontWeight="900" sx={{ color: s.c }}>{s.v}</Typography>
@@ -272,7 +293,8 @@ const AdminDashboard = () => {
           </Grid>
         ))}
       </Grid>
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mb: 6 }}>
         <Button variant="contained" component={Link} to="/admin/kolcsonzesek" startIcon={<QrCodeScannerIcon />} fullWidth>QR Kezelés</Button>
         {isAdmin && (
           <>
@@ -281,6 +303,112 @@ const AdminDashboard = () => {
           </>
         )}
       </Stack>
+
+      <Box>
+        <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
+          <HourglassEmptyIcon sx={{ color: '#8b5cf6' }} />
+          <Typography variant="h6" fontWeight="800">Jóváhagyásra váró kérelmek</Typography>
+          {stats.varakozok > 0 && (
+            <Box sx={{
+              bgcolor: '#8b5cf6',
+              color: 'white',
+              borderRadius: '12px',
+              px: 1.2,
+              py: 0.2,
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              lineHeight: '1.6'
+            }}>
+              {stats.varakozok}
+            </Box>
+          )}
+        </Stack>
+
+        {varakozo.length === 0 ? (
+          <Paper elevation={0} sx={{
+            p: 4,
+            textAlign: 'center',
+            bgcolor: '#f8f9fa',
+            borderRadius: 3,
+            border: '1.5px dashed #e0e0e0'
+          }}>
+            <HourglassEmptyIcon sx={{ fontSize: 40, color: '#ccc', mb: 1 }} />
+            <Typography color="text.secondary" fontWeight="600">Nincs függőben lévő kérelem</Typography>
+          </Paper>
+        ) : (
+          <Stack spacing={2}>
+            {varakozo.map((k) => (
+              <Paper key={k.id} elevation={0} sx={{
+                p: 2.5,
+                borderRadius: 3,
+                border: '1.5px solid #e9d5ff',
+                bgcolor: '#faf5ff'
+              }}>
+                <Grid container alignItems="center" spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
+                      <LaptopMacIcon sx={{ color: '#8b5cf6', fontSize: 20 }} />
+                      <Typography fontWeight="800" variant="body1">
+                        {k.eszkozNev || k.eszkoz?.nev || `Eszköz #${k.eszkozId}`}
+                      </Typography>
+                    </Stack>
+                    <Stack direction="row" spacing={2}>
+                      <Stack direction="row" spacing={0.5} alignItems="center">
+                        <PersonIcon sx={{ fontSize: 15, color: 'text.secondary' }} />
+                        <Typography variant="caption" color="text.secondary" fontWeight="600">
+                          {k.felhasznaloNev || k.felhasznalo?.nev || `#${k.felhasznaloId}`}
+                        </Typography>
+                      </Stack>
+                      {k.hatarido && (
+                        <Stack direction="row" spacing={0.5} alignItems="center">
+                          <CalendarTodayIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
+                          <Typography variant="caption" color="text.secondary" fontWeight="600">
+                            {new Date(k.hatarido).toLocaleDateString('hu-HU')}
+                          </Typography>
+                        </Stack>
+                      )}
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Stack direction="row" spacing={1.5} justifyContent={{ xs: 'flex-start', sm: 'flex-end' }}>
+                      <Button
+                        variant="contained"
+                        color="success"
+                        size="small"
+                        startIcon={
+                          actionLoading === k.id + '_elfogad'
+                            ? <CircularProgress size={14} color="inherit" />
+                            : <CheckCircleIcon />
+                        }
+                        onClick={() => handleElfogad(k.id)}
+                        disabled={!!actionLoading}
+                        sx={{ borderRadius: 2, fontWeight: 700 }}
+                      >
+                        Jóváhagyás
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        size="small"
+                        startIcon={
+                          actionLoading === k.id + '_elutasit'
+                            ? <CircularProgress size={14} color="inherit" />
+                            : <CancelIcon />
+                        }
+                        onClick={() => handleElutasit(k.id)}
+                        disabled={!!actionLoading}
+                        sx={{ borderRadius: 2, fontWeight: 700 }}
+                      >
+                        Elutasítás
+                      </Button>
+                    </Stack>
+                  </Grid>
+                </Grid>
+              </Paper>
+            ))}
+          </Stack>
+        )}
+      </Box>
     </Box>
   );
 };

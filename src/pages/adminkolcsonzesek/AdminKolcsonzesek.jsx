@@ -84,19 +84,15 @@ export default function AdminKolcsonzesek() {
 
   const handleQrScanSuccess = async (decodedText) => {
     try {
-      // 1. Kiszedjük a számot az "ESZKOZ_ID:5 | SKU..." szövegből
       const match = decodedText.match(/ESZKOZ_ID:(\d+)/);
       
       if (match && match[1]) {
         const tisztaEszkozId = parseInt(match[1], 10);
         
-        // 2. Elküldjük a tiszta ID-t a backendnek
         await ApiService.visszavetelByEszkozId(tisztaEszkozId);
         
         alert(`Sikeres visszavétel! (Eszköz ID: ${tisztaEszkozId})`);
         
-        // 3. Opcionális: Frissítsd a listát a képernyőn
-        // loadKolcsonzesek(); 
       } else {
         alert("Érvénytelen QR kód! Ezt nem a mi rendszerünk generálta.");
       }
@@ -146,7 +142,6 @@ export default function AdminKolcsonzesek() {
         </Alert>
       )}
 
-      {/* ── KIADÁSRA VÁRÓ KÉRELMEK SZEKCIÓ ── */}
       {kiadasraVarok.length > 0 && (
         <Box sx={{ mb: 4 }}>
           <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
@@ -203,8 +198,7 @@ export default function AdminKolcsonzesek() {
           </TableContainer>
         </Box>
       )}
-
-      {/* ── ÖSSZES KÖLCSÖNZÉS TÁBLÁZAT ── */}
+      
       <TableContainer component={Paper} className={styles.tableContainer} sx={{ overflowX: "auto" }}>
         <Table>
           <TableHead className={styles.tableHead}>
