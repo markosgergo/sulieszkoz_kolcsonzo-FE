@@ -48,13 +48,13 @@ function Row({ eszkoz, isAdmin, isStaff, user, navigate, handleDelete, handleOpe
     if (window.confirm(`Szeretnéd lefoglalni a következőt: ${eszkoz.nev}?`)) {
       try {
         const foglalasAdat = {
-          felhasznaloId: user.id, 
+          felhasznaloId: user.id,
           eszkozId: eszkoz.id,
-          kiadoId: user.id, 
+          // kiadoId szándékosan nincs megadva – a backend KIADASRA_VAR státuszt ad
           hatarido: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
         };
         await ApiService.createKolcsonzes(foglalasAdat);
-        alert("Sikeres foglalás!");
+        alert("Foglalási kérelem elküldve! Az alkalmazott vagy admin jóváhagyásra vár.");
         onRefresh();
       } catch (err) {
         alert("Hiba a foglalásnál!");
@@ -75,9 +75,8 @@ function Row({ eszkoz, isAdmin, isStaff, user, navigate, handleDelete, handleOpe
         <TableCell>{eszkoz.tipus}</TableCell>
         <TableCell>
           <Chip 
-            label={eszkoz.elerheto ? "Szabad" : "Kiadva"} 
-            color={eszkoz.elerheto ? "success" : "error"} 
-            variant="light" // Ha az MUI témád támogatja, ez lágyabb színt ad
+            label={eszkoz.elerheto ? "Szabad" : eszkoz.kiadasraVar ? "Kiadásra vár" : "Kiadva"} 
+            color={eszkoz.elerheto ? "success" : eszkoz.kiadasraVar ? "warning" : "error"} 
             size="small" 
             sx={{ fontWeight: 600, borderRadius: '6px' }}
           />
@@ -89,6 +88,11 @@ function Row({ eszkoz, isAdmin, isStaff, user, navigate, handleDelete, handleOpe
                 {eszkoz.elerheto ? (
                   <IconButton color="info" onClick={() => navigate(`/kolcsonzes/${eszkoz.id}`)} title="Kiadás">
                     <AssignmentIcon />
+                  </IconButton>
+                ) : eszkoz.kiadasraVar ? (
+                  // Kiadásra vár – nem lehet visszavenni, csak jóváhagyni az admin oldalon
+                  <IconButton disabled title="Jóváhagyásra vár" sx={{ opacity: 0.35 }}>
+                    <AssignmentTurnedInIcon />
                   </IconButton>
                 ) : (
                   <IconButton color="success" onClick={handleVisszavetel} title="Visszavétel">
@@ -171,9 +175,25 @@ export default function EszkozLista() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const data = await ApiService.getAllEszkoz();
-      setEszkozok(data);
-      setSzurtEszkozok(data);
+      const isStaffUser = user?.szerepkorNev === "ADMIN" || user?.role === "ADMIN" || user?.szerepkorNev === "ALKALMAZOTT";
+      const [eszkozData, kolcsonzesData] = await Promise.all([
+        ApiService.getAllEszkoz(),
+        isStaffUser
+          ? ApiService.getKiadasraVaroKerelmek().catch(() => [])
+          : ApiService.getSajatKolcsonzesek().catch(() => []),
+      ]);
+      // Minden eszközhöz megkeressük, van-e KIADASRA_VAR státuszú kölcsönzés
+      const kiadasraVarEszkozIds = new Set(
+        kolcsonzesData
+          .filter(k => k.statuszNev === "KIADASRA_VAR")
+          .map(k => k.eszkozId)
+      );
+      const enrichedData = eszkozData.map(e => ({
+        ...e,
+        kiadasraVar: kiadasraVarEszkozIds.has(e.id),
+      }));
+      setEszkozok(enrichedData);
+      setSzurtEszkozok(enrichedData);
     } catch (err) { console.error(err); } 
     finally { setLoading(false); }
   };

@@ -113,6 +113,21 @@ const ApiService = {
     return response.data;
   },
 
+  getKiadasraVaroKerelmek: async () => {
+    const response = await api.get("/kolcsonzesek/kiadasra-var");
+    return response.data;
+  },
+
+  elfogadKiadasKerelem: async (id) => {
+    const response = await api.put(`/kolcsonzesek/${id}/elfogadas`);
+    return response.data;
+  },
+
+  elutasitKiadasKerelem: async (id) => {
+    const response = await api.delete(`/kolcsonzesek/${id}/elutasitas`);
+    return response.data;
+  },
+
   getSajatKolcsonzesek: async () => {
     const response = await api.get("/kolcsonzesek/sajat");
     return response.data;

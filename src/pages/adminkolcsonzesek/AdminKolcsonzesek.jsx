@@ -16,6 +16,7 @@ import QrScanner from "../../components/QrScanner";
 
 export default function AdminKolcsonzesek() {
   const [kolcsonzesek, setKolcsonzesek] = useState([]);
+  const [kiadasraVarok, setKiadasraVarok] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uzenet, setUzenet] = useState({ tipus: "success", szoveg: "" });
   const [showScanner, setShowScanner] = useState(false);
@@ -23,8 +24,12 @@ export default function AdminKolcsonzesek() {
   const adatokBetoltese = async () => {
     try {
       setLoading(true);
-      const data = await ApiService.getAllKolcsonzes();
-      setKolcsonzesek(data);
+      const [osszes, varok] = await Promise.all([
+        ApiService.getAllKolcsonzes(),
+        ApiService.getKiadasraVaroKerelmek(),
+      ]);
+      setKolcsonzesek(osszes);
+      setKiadasraVarok(varok);
     } catch (err) {
       console.error("Hiba:", err);
       setUzenet({ tipus: "error", szoveg: "Nem sikerült betölteni a listát." });
@@ -45,6 +50,27 @@ export default function AdminKolcsonzesek() {
       await adatokBetoltese();
     } catch (err) {
       setUzenet({ tipus: "error", szoveg: "Hiba történt a visszavétel során." });
+    }
+  };
+
+  const handleElfogad = async (id) => {
+    try {
+      await ApiService.elfogadKiadasKerelem(id);
+      setUzenet({ tipus: "success", szoveg: "Eszköz kiadása jóváhagyva!" });
+      await adatokBetoltese();
+    } catch (err) {
+      setUzenet({ tipus: "error", szoveg: "Hiba a jóváhagyás során." });
+    }
+  };
+
+  const handleElutasit = async (id) => {
+    if (!window.confirm("Biztosan elutasítod ezt a kérelmet?")) return;
+    try {
+      await ApiService.elutasitKiadasKerelem(id);
+      setUzenet({ tipus: "success", szoveg: "Kérelem elutasítva." });
+      await adatokBetoltese();
+    } catch (err) {
+      setUzenet({ tipus: "error", szoveg: "Hiba az elutasítás során." });
     }
   };
 
@@ -120,6 +146,65 @@ export default function AdminKolcsonzesek() {
         </Alert>
       )}
 
+      {/* ── KIADÁSRA VÁRÓ KÉRELMEK SZEKCIÓ ── */}
+      {kiadasraVarok.length > 0 && (
+        <Box sx={{ mb: 4 }}>
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+            <Chip label={kiadasraVarok.length} color="warning" size="small" sx={{ fontWeight: 700 }} />
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#b45309' }}>
+              Jóváhagyásra váró kérelmek
+            </Typography>
+          </Stack>
+          <TableContainer component={Paper} sx={{ border: '2px solid #fde68a', borderRadius: '12px', overflowX: 'auto' }}>
+            <Table>
+              <TableHead sx={{ bgcolor: '#fffbeb' }}>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 700 }}>Eszköz</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Kérelmező diák</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Kért határidő</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 700 }}>Döntés</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {kiadasraVarok.map((k) => (
+                  <TableRow key={k.id} sx={{ bgcolor: '#fffef0' }}>
+                    <TableCell>
+                      <Typography variant="body1" sx={{ fontWeight: 600 }}>{k.eszkozNev}</Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>#{k.eszkozId}</Typography>
+                    </TableCell>
+                    <TableCell>{k.felhasznaloNev || "N/A"}</TableCell>
+                    <TableCell>{k.hatarido}</TableCell>
+                    <TableCell align="center">
+                      <Stack direction="row" spacing={1} justifyContent="center">
+                        <Button
+                          variant="contained"
+                          color="success"
+                          size="small"
+                          startIcon={<CheckCircleIcon />}
+                          onClick={() => handleElfogad(k.id)}
+                          className={styles.actionButton}
+                        >
+                          Kiadás jóváhagyása
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size="small"
+                          onClick={() => handleElutasit(k.id)}
+                        >
+                          Elutasítás
+                        </Button>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      )}
+
+      {/* ── ÖSSZES KÖLCSÖNZÉS TÁBLÁZAT ── */}
       <TableContainer component={Paper} className={styles.tableContainer} sx={{ overflowX: "auto" }}>
         <Table>
           <TableHead className={styles.tableHead}>
@@ -133,13 +218,15 @@ export default function AdminKolcsonzesek() {
           </TableHead>
           <TableBody>
             {kolcsonzesek.map((k) => {
+              const isKiadasraVar = k.statuszNev === "KIADASRA_VAR";
               const isVisszahozva = !!(k.visszavetelDatuma || k.visszahozvaDatum);
-              const isExpired = !isVisszahozva && new Date(k.hatarido) < new Date().setHours(0,0,0,0);
+              const isExpired = !isVisszahozva && !isKiadasraVar && new Date(k.hatarido) < new Date().setHours(0,0,0,0);
 
               return (
                 <TableRow 
                   key={k.id} 
                   className={`${styles.tableRow} ${isVisszahozva ? styles.returnedRow : ""}`}
+                  sx={isKiadasraVar ? { bgcolor: '#fffef0' } : {}}
                 >
                   <TableCell>
                     <Typography variant="body1" sx={{ fontWeight: 600 }}>{k.eszkozNev}</Typography>
@@ -155,15 +242,27 @@ export default function AdminKolcsonzesek() {
                   </TableCell>
                   <TableCell>
                     <Chip 
-                      label={isVisszahozva ? "Visszahozva" : (isExpired ? "Késésben" : "Kiadva")} 
-                      color={isVisszahozva ? "default" : (isExpired ? "error" : "primary")} 
+                      label={
+                        isKiadasraVar ? "Kiadásra vár" :
+                        isVisszahozva ? "Visszahozva" :
+                        isExpired ? "Késésben" : "Kiadva"
+                      } 
+                      color={
+                        isKiadasraVar ? "warning" :
+                        isVisszahozva ? "default" :
+                        isExpired ? "error" : "primary"
+                      } 
                       size="small" 
-                      variant={isVisszahozva ? "outlined" : "contained"}
+                      variant={isVisszahozva ? "outlined" : "filled"}
                       sx={{ fontWeight: 600, borderRadius: '6px' }}
                     />
                   </TableCell>
                   <TableCell align="center">
-                    {isVisszahozva ? (
+                    {isKiadasraVar ? (
+                      <Typography variant="caption" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+                        Jóváhagyásra vár
+                      </Typography>
+                    ) : isVisszahozva ? (
                       <Stack direction="row" spacing={1} justifyContent="center" sx={{ color: 'text.disabled' }}>
                         <InventoryIcon fontSize="small" />
                         <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase' }}>Raktáron</Typography>

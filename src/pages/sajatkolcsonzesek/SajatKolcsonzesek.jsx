@@ -124,7 +124,13 @@ export default function SajatKolcsonzesek() {
                     </TableCell>
 
                     <TableCell align="center">
-                      {isVisszahozva ? (
+                      {k.statuszNev === "KIADASRA_VAR" ? (
+                        <Chip
+                          label="Kiadásra vár"
+                          color="warning"
+                          sx={{ fontWeight: 700, px: 1 }}
+                        />
+                      ) : isVisszahozva ? (
                         <Chip 
                           label="Visszahozva" 
                           size="small" 
