@@ -184,9 +184,16 @@ const PublicLanding = () => (
 
 const UserDashboard = () => {
   const [activeCount, setActiveCount] = useState(0);
+  const [fuggoCount, setFuggoCount] = useState(0);
+
   useEffect(() => {
     ApiService.getSajatKolcsonzesek()
-      .then(data => setActiveCount(data.filter(k => k.statusz === 'KIKOLCSONOZVE').length))
+      .then(data => {
+        
+        setActiveCount(data.filter(k => (k.kiadasDatuma || k.statusz === 'KIKOLCSONOZVE') && !k.visszavetelDatuma).length);
+        
+        setFuggoCount(data.filter(k => !k.kiadasDatuma && k.statusz !== 'KIKOLCSONOZVE' && !k.visszavetelDatuma && k.statusz !== 'ELUTASITVA').length);
+      })
       .catch(err => console.error(err));
   }, []);
 
@@ -197,9 +204,19 @@ const UserDashboard = () => {
         <Grid item xs={12} md={8}>
           <Card className={styles.userCard}>
             <CardContent>
-              <Typography variant="h5" fontWeight="bold">Aktív kölcsönzéseid</Typography>
-              <Typography variant="h2" className={styles.statValue}>{activeCount}</Typography>
-              <Button variant="contained" className={styles.whiteButton} component={Link} to="/sajat-kolcsonzesek">Megtekintés</Button>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Typography variant="h6" fontWeight="bold">Aktív kölcsönzések</Typography>
+                  <Typography variant="h2" className={styles.statValue}>{activeCount}</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="h6" fontWeight="bold">Jóváhagyásra vár</Typography>
+                  <Typography variant="h2" className={styles.statValue} sx={{ opacity: 0.8 }}>{fuggoCount}</Typography>
+                </Grid>
+              </Grid>
+              <Button variant="contained" className={styles.whiteButton} component={Link} to="/sajat-kolcsonzesek" sx={{ mt: 2 }}>
+                Részletek megtekintése
+              </Button>
             </CardContent>
           </Card>
         </Grid>
@@ -234,10 +251,11 @@ const AdminDashboard = () => {
       const [e, k, v] = results;
       const f = isAdmin ? results[3] : [];
       const ma = new Date(); ma.setHours(0,0,0,0);
+      
       setStats({
         osszes: e.length,
-        kint: k.filter(x => x.statusz === 'KIKOLCSONOZVE').length,
-        kesesben: k.filter(x => x.statusz === 'KIKOLCSONOZVE' && new Date(x.hatarido) < ma).length,
+        kint: k.filter(x => (x.statusz === 'KIKOLCSONOZVE' || !!x.kiadasDatuma) && !x.visszavetelDatuma).length,
+        kesesben: k.filter(x => (x.statusz === 'KIKOLCSONOZVE' || !!x.kiadasDatuma) && !x.visszavetelDatuma && new Date(x.hatarido) < ma).length,
         felhasznalok: f.length,
         varakozok: v.length
       });
